@@ -1,0 +1,44 @@
+Feature,Importance
+num__Total Recordable Incident Rate - Employees,0.1650645090660146
+num__Fatalities - Employees,0.08588066403002298
+num__Number of Non Executive Directors on Board,0.07320181461614209
+num__Pct Women in Workforce,0.04648389701504087
+num__GHG Scope 2 Location-Based,0.04192653129966967
+num__Nitrogen Oxide Emissions,0.04150904121303162
+num__Years Auditor Employed,0.03837286446823154
+num__Number of Executives / Company Managers,0.029923469181699077
+num__Board Duration (Years),0.02965020009829893
+num__Audit Committee Meetings,0.02937985049519549
+num__Number of Women on Board,0.029216157863428946
+num__Number of Nomination Committee Meetings,0.028376563142010452
+num__Fatalities - Total,0.027068451504229447
+num__Board Size,0.026779585412754728
+num__Number of Board Meetings for the Year,0.025966851065151685
+num__Age of the Oldest Director,0.022437595201146344
+num__Age of the Youngest Director,0.02114804437118296
+num__Number of Independent Directors,0.020917435065433018
+num__Number of Compensation Committee Meetings,0.01949749547297827
+num__Total Energy Consumption,0.01949145741902617
+num__GHG Scope 1,0.018079828275014337
+num__Number of Employees - CSR,0.017204898272385204
+num__Number of Female Executives,0.015866429323711392
+num__Size of Nomination Committee,0.01491719954918587
+num__Board Meeting Attendance Pct,0.014360396813799175
+num__Size of Audit Committee,0.012064439060040764
+num__Number of Independent Directors on Audit Committee,0.01149982147294176
+num__Num of Independent Directors on Nomination Cmte,0.010112853281349818
+num__Audit Committee Meeting Attendance Percentage,0.008999214760084268
+num__Compensation Committee Meeting Attendance %,0.007453962512433381
+num__Nomination Committee Meeting Attendance Percentage,0.0066362663958519095
+num__Size of Compensation Committee,0.006501274427278705
+num__Num of Independent Directors on Compensation Cmte,0.005589045895745676
+num__Total Water Withdrawal,0.00510894853146933
+cat__Year_2023,0.0039903748361870845
+cat__Year_2015,0.0030562400706457913
+cat__Year_2022,0.002853704951229312
+cat__Year_2019,0.0028150327248510983
+cat__Year_2018,0.002739329438292744
+cat__Year_2017,0.002613255522119996
+cat__Year_2016,0.0019717361950016906
+cat__Year_2021,0.001691857231754207
+cat__Year_2020,0.0015814124579375513

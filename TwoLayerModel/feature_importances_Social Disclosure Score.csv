@@ -1,0 +1,44 @@
+Feature,Importance
+num__Fatalities - Employees,0.17218003031184465
+num__Fatalities - Total,0.16755788360328752
+num__Total Recordable Incident Rate - Employees,0.10789640339917951
+num__Number of Women on Board,0.06649084744670855
+num__Audit Committee Meetings,0.047716410146406624
+num__Pct Women in Workforce,0.042097196298350556
+num__Number of Non Executive Directors on Board,0.04116530425290252
+num__Nitrogen Oxide Emissions,0.029280226246222344
+num__Number of Independent Directors,0.02635266576264717
+num__Number of Executives / Company Managers,0.024978070853629047
+num__Age of the Oldest Director,0.0226858051208641
+num__Number of Board Meetings for the Year,0.01946864703904172
+num__Number of Nomination Committee Meetings,0.019174887130953493
+num__Age of the Youngest Director,0.01834801620562403
+num__Years Auditor Employed,0.01807307049519819
+num__GHG Scope 2 Location-Based,0.017905727464994706
+num__Board Meeting Attendance Pct,0.01262867349315086
+num__Number of Compensation Committee Meetings,0.011997372034227256
+num__Total Water Withdrawal,0.011026086023618539
+num__Audit Committee Meeting Attendance Percentage,0.010214109517210614
+num__Board Size,0.008880710322458279
+num__Nomination Committee Meeting Attendance Percentage,0.008542003684716977
+num__Size of Compensation Committee,0.008235641001351721
+num__Num of Independent Directors on Compensation Cmte,0.008200574762776238
+num__Number of Employees - CSR,0.008097727937792494
+num__Compensation Committee Meeting Attendance %,0.007987284259454308
+num__GHG Scope 1,0.00790951241582389
+num__Size of Audit Committee,0.007404664026312586
+num__Number of Female Executives,0.007025385343377731
+num__Number of Independent Directors on Audit Committee,0.006745871565925035
+num__Num of Independent Directors on Nomination Cmte,0.00658465058748096
+num__Board Duration (Years),0.006212570281109106
+num__Size of Nomination Committee,0.005793186214322523
+cat__Year_2015,0.0034440060683769242
+num__Total Energy Consumption,0.0034170428512874935
+cat__Year_2022,0.0016211463765988
+cat__Year_2019,0.0013709944936445455
+cat__Year_2016,0.0012422223555916712
+cat__Year_2021,0.000977031932281232
+cat__Year_2018,0.0009397117285560839
+cat__Year_2023,0.0008002483691961535
+cat__Year_2017,0.0006843314094832589
+cat__Year_2020,0.0006460491660200282

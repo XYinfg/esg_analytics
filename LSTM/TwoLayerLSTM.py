@@ -230,7 +230,7 @@ def dynamic_esg_loss(predictions, targets, initial_component_weight=0.7,
 
 def train_two_layer_model(df, target_cols, hidden_size=256, num_layers=2,
                          seq_length=3, learning_rate=0.001, train_size=0.8,
-                         epochs=100, patience=15, batch_size=32,
+                         epochs=100, patience=15, batch_size=32, dropout=0.2,
                          initial_component_weight=0.7, threshold=0.1):
     """
     Train the two-layer ESG prediction model
@@ -311,7 +311,8 @@ def train_two_layer_model(df, target_cols, hidden_size=256, num_layers=2,
         input_size=input_size,
         hidden_size=hidden_size,
         num_layers=num_layers,
-        component_size=component_size  # Pass the correct component size
+        component_size=component_size,  # Pass the correct component size
+        dropout=dropout
     ).to(device)
 
     # Define optimizer
