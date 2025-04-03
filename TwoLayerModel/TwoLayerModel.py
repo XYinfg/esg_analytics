@@ -56,10 +56,10 @@ class TwoLayerModel:
             'BESG Environmental Pillar Score',
             'BESG Social Pillar Score',
             'BESG Governance Pillar Score',
-            'ESG Disclosure Score',
-            'Environmental Disclosure Score',
-            'Social Disclosure Score',
-            'Governance Disclosure Score'
+            # 'ESG Disclosure Score',
+            # 'Environmental Disclosure Score',
+            # 'Social Disclosure Score',
+            # 'Governance Disclosure Score'
         ]
 
         # Final target column
