@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.impute import KNNImputer
 
 def clean_data(df):
     """
@@ -14,10 +15,17 @@ def clean_data(df):
     df.dropna(thresh=0.7*len(df), axis=1, inplace=True)
 
     # Drop Market Cap column
-    df.drop(columns=['Market Cap ($M)'], inplace=True)
+    try:
+        df.drop(columns=['Market Cap ($M)'], inplace=True)
+    except KeyError:
+        print("Market Cap column not found, skipping drop.")
 
     # Drop rows with '#N/A Requesting Data...'
-    df = df[~df['BESG ESG Score'].str.contains('#N/A Requesting Data...')]
+    if df['BESG ESG Score'].dtype == 'object':
+        df = df[~df['BESG ESG Score'].str.contains('#N/A Requesting Data...', na=False)]
+    else:
+        # If already converted to numeric, NaN values will handle the invalid entries
+        pass
 
     # Print basic information about the DataFrame
     print(f"Dataset shape: {df.shape}")
@@ -61,7 +69,7 @@ def clean_data(df):
         'Number of Suppliers Audited', 'Percentage Suppliers Audited',
         'Number of Supplier Audits Conducted', 'Number Supplier Facilities Audited',
         'Percentage of Suppliers in Non-Compliance', 'Number of Customer Complaints',
-        'Raw Materials Used', 'Revenue, Adj', 'Net Income, Adj'
+        'Raw Materials Used', 'Revenue, Adj', 'Net Income, Adj',
     ]
 
     for col in df.columns:
@@ -85,22 +93,53 @@ def clean_data(df):
         'Company Discloses Employee Engagement Score', 'Verification Type'
     ]
 
+    # Instantiate KNNImputer
+    # KNNImputer is used to fill in missing values based on the nearest neighbors
+    # Data is not normally distributed, so KNN is a good choice
+    # KNNImputer is a non-parametric imputer that uses the k-nearest neighbors algorithm
+    # to impute missing values in the dataset
+    # It is particularly useful for datasets with a large number of features
+    # and can handle both numerical and categorical data
+    knn_imputer = KNNImputer(n_neighbors=5)
+
     # Impute missing values for numeric columns
-    for col in numeric_cols:
-        if col in df.columns:
-            df[col] = df[col].fillna(df[col].mean())
+    numeric_cols_in_df = [col for col in numeric_cols if col in df.columns]
+    if len(numeric_cols_in_df) > 0:
+        # Check if there are any numeric columns to impute
+        print(f"Imputing missing values for numeric columns: {numeric_cols_in_df}")
+    else:
+        print("No numeric columns found for imputation.")
+    df[numeric_cols_in_df] = knn_imputer.fit_transform(df[numeric_cols_in_df])
 
     # Impute missing values for binary columns
+    binary_cols_in_df = [col for col in binary_cols if col in df.columns]
+    if len(binary_cols_in_df) > 0:
+        # Check if there are any binary columns to impute
+        print(f"Imputing missing values for binary columns: {binary_cols_in_df}")
+    else:
+        print("No binary columns found for imputation.")
     for col in binary_cols:
         if col in df.columns:
             df[col] = df[col].map({'Yes': 1, 'No': 0, 'yes': 1, 'no': 0}).astype('bool')
-            df[col] = df[col].fillna(df[col].mode()[0])
+    df[binary_cols_in_df] = knn_imputer.fit_transform(df[binary_cols_in_df])
+    df[binary_cols_in_df] = df[binary_cols_in_df].astype('bool')
 
     # Impute missing values for categorical columns
+    categorical_cols_in_df = [col for col in df.columns if df[col].dtype == 'object' and col not in ['Company', 'Ticker']]
+    if len(categorical_cols_in_df) > 0:
+        print(f"Imputing missing values for categorical columns: {categorical_cols_in_df}")
+    else:
+        print("No categorical columns found for imputation.")
+    # For categorical columns, use mode imputation instead of KNN
     for col in df.columns:
         if df[col].dtype == 'object' and col not in ['Company', 'Ticker']:
-            df[col] = df[col].fillna(df[col].mode()[0])
+            # Fill missing values with "Unknown"
+            df[col].fillna('Unknown', inplace=True)
+            # Convert to category type
             df[col] = df[col].astype('category')
+
+    # Convert the target column to numeric
+    df['BESG ESG Score'] = pd.to_numeric(df['BESG ESG Score'], errors='coerce')
 
     # One-hot encoding for categorical columns without Company and Ticker
     df = pd.get_dummies(df, columns=df.select_dtypes(include='category').columns)

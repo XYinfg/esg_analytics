@@ -5,12 +5,13 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import statsmodels.api as sm
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 class TwoLayerModel:
-    def __init__(self, cat_features, num_features):
+    def __init__(self, cat_features, num_features, layer2_model=LinearRegression()):
         """
         Initialize the two-layer ESG prediction model.
 
@@ -48,7 +49,7 @@ class TwoLayerModel:
         ])
 
         # Tier 2: Linear regression model to calculate final ESG score from pillar and disclosure scores
-        self.layer2_model = LinearRegression()
+        self.layer2_model = layer2_model
 
         # Names of the intermediate targets (pillar and disclosure scores)
         self.pillar_disclosure_columns = [
@@ -82,7 +83,13 @@ class TwoLayerModel:
         layer1_predictions = self.layer1_model.predict(X_train)
 
         # Fit Tier 2 model to predict final ESG score from pillar and disclosure predictions
-        self.layer2_model.fit(layer1_predictions, y_train[self.final_target])
+        # Determine weights for each pillar and disclosure score using OLS
+        if self.layer2_model is None:
+            # If no model is provided, use OLS regression
+            layers2_model = sm.OLS(y_train[self.final_target], y_train[self.pillar_disclosure_columns])
+            layers2_model = layers2_model.fit()
+            # Get the coefficients for the linear regression model
+            self.layer2_model = layers2_model.params
 
         return self
 
@@ -105,7 +112,9 @@ class TwoLayerModel:
         pillar_disclosure_preds = self.layer1_model.predict(X)
 
         # Use these predictions to get the final ESG score from Tier 2
-        esg_score_preds = self.layer2_model.predict(pillar_disclosure_preds)
+        # Calculate the final ESG Score using coefficients from OLS
+        # layer2_model are the coefficients from the OLS regression
+        esg_score_preds = np.dot(pillar_disclosure_preds, self.layer2_model)
 
         return {
             'pillar_disclosure_scores': pillar_disclosure_preds,
