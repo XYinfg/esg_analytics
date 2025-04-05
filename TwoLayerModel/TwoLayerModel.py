@@ -289,14 +289,14 @@ class TwoLayerModel:
 
 def plot_actual_vs_predicted_two_layer(model, X_test, y_test):
     """
-    Plot actual vs predicted values for all targets in the two-layer model.
+    Plot actual vs predicted values for all targets in the two-layer model using seaborn.
 
     Parameters:
     -----------
     model : TwoLayerModel
         The trained two-layer model
     X_test : DataFrame
-        Test features
+        Test features (should include 'Year' column for hue)
     y_test : DataFrame
         Test targets
     """
@@ -308,57 +308,171 @@ def plot_actual_vs_predicted_two_layer(model, X_test, y_test):
 
     # Create a grid of subplots
     # Dynamically adjust the number of rows and columns for the subplot grid
-    cols = min(3, n_outputs)  # Limit the number of columns to a maximum of 3
+    cols = min(2, n_outputs)  # Limit the number of columns to a maximum of 3
     rows = (n_outputs + cols - 1) // cols  # Ceiling division to determine number of rows
     fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 5 * rows))
     axes = np.array(axes).reshape(-1)  # Ensure axes is always a 1D array
 
+    # Check if 'Year' column exists, otherwise use None for hue
+    if 'Year' in X_test.columns:
+        years = X_test['Year']
+    else:
+        years = None
+        print("Warning: 'Year' column not found in X_test. Using default colors.")
+
+    # Create color palette for years
+    if years is not None:
+        unique_years = years.unique()
+        n_years = len(unique_years)
+        cmap = plt.cm.get_cmap('viridis', n_years)
+        year_colors = {year: cmap(i/n_years) for i, year in enumerate(sorted(unique_years))}
+
     # Plot for pillar and disclosure scores (Layer 1)
     for i, col in enumerate(model.pillar_disclosure_columns):
-        # Scatter plot of actual vs predicted for this specific output
-        axes[i].scatter(y_test[col], predictions['pillar_disclosure_scores'][:, i], alpha=0.7)
+        # Create dataframe for plotting
+        plot_df = pd.DataFrame({
+            'Actual': y_test[col],
+            'Predicted': predictions['pillar_disclosure_scores'][:, i],
+        })
+
+        if years is not None:
+            plot_df['Year'] = years
+
+        # Seaborn scatterplot with enhanced styling
+        if years is not None:
+            sns.scatterplot(
+                data=plot_df,
+                x='Actual',
+                y='Predicted',
+                hue='Year',
+                palette='viridis',
+                alpha=0.7,
+                s=80,  # point size
+                edgecolor='w',  # white edge for better visibility
+                linewidth=0.5,
+                ax=axes[i]
+            )
+            # Move legend to a better position
+            axes[i].legend(title='Year', bbox_to_anchor=(1.05, 1), loc='upper left')
+        else:
+            sns.scatterplot(
+                data=plot_df,
+                x='Actual',
+                y='Predicted',
+                alpha=0.7,
+                color='steelblue',
+                s=80,
+                edgecolor='w',
+                linewidth=0.5,
+                ax=axes[i]
+            )
 
         # Add perfect prediction line
-        min_val = min(y_test[col].min(), predictions['pillar_disclosure_scores'][:, i].min())
-        max_val = max(y_test[col].max(), predictions['pillar_disclosure_scores'][:, i].max())
-        axes[i].plot([min_val, max_val], [min_val, max_val], 'r--')
+        min_val = min(plot_df['Actual'].min(), plot_df['Predicted'].min())
+        max_val = max(plot_df['Actual'].max(), plot_df['Predicted'].max())
+        axes[i].plot([min_val, max_val], [min_val, max_val], 'r--', linewidth=2)
 
         # Calculate R² for this prediction
-        r2 = r2_score(y_test[col], predictions['pillar_disclosure_scores'][:, i])
+        r2 = r2_score(plot_df['Actual'], plot_df['Predicted'])
 
-        # Set labels and title
-        axes[i].set_xlabel(f'Actual {col}')
-        axes[i].set_ylabel(f'Predicted {col}')
-        axes[i].set_title(f'Layer 1: {col}\nR² = {r2:.4f}')
-        axes[i].grid(True, linestyle='--', alpha=0.7)
+        # Set labels and title with improved styling
+        axes[i].set_xlabel(f'Actual {col}', fontsize=12)
+        axes[i].set_ylabel(f'Predicted {col}', fontsize=12)
+
+        # Set title with improved styling
+        axes[i].set_title(f'Layer 1: {col} \nR² = {r2:.4f}', fontsize=14)
+
+        # Enhance grid
+        axes[i].grid(True, linestyle='--', alpha=0.3, color='gray')
+
+        # Set equal aspect ratio for better visualization
+        axes[i].set_aspect('equal', adjustable='box')
 
     # Plot for final ESG score (Layer 2)
     i = len(model.pillar_disclosure_columns)
-    axes[i].scatter(y_test[model.final_target], predictions['esg_score'], alpha=0.7)
+
+    # Create dataframe for plotting final score
+    final_plot_df = pd.DataFrame({
+        'Actual': y_test[model.final_target],
+        'Predicted': predictions['esg_score'],
+    })
+
+    if years is not None:
+        final_plot_df['Year'] = years
+
+    # Seaborn scatterplot for final score
+    if years is not None:
+        sns.scatterplot(
+            data=final_plot_df,
+            x='Actual',
+            y='Predicted',
+            hue='Year',
+            palette='viridis',
+            alpha=0.8,
+            s=100,  # larger point size for final prediction
+            edgecolor='w',
+            linewidth=0.5,
+            ax=axes[i]
+        )
+        # Move legend to a better position
+        axes[i].legend(title='Year', bbox_to_anchor=(1.05, 1), loc='upper left')
+    else:
+        sns.scatterplot(
+            data=final_plot_df,
+            x='Actual',
+            y='Predicted',
+            alpha=0.8,
+            color='darkblue',
+            s=100,
+            edgecolor='w',
+            linewidth=0.5,
+            ax=axes[i]
+        )
 
     # Add perfect prediction line
-    min_val = min(y_test[model.final_target].min(), predictions['esg_score'].min())
-    max_val = max(y_test[model.final_target].max(), predictions['esg_score'].max())
-    axes[i].plot([min_val, max_val], [min_val, max_val], 'r--')
+    min_val = min(final_plot_df['Actual'].min(), final_plot_df['Predicted'].min())
+    max_val = max(final_plot_df['Actual'].max(), final_plot_df['Predicted'].max())
+    axes[i].plot([min_val, max_val], [min_val, max_val], 'r--', linewidth=2)
 
     # Calculate R² for the final prediction
-    r2 = r2_score(y_test[model.final_target], predictions['esg_score'])
+    r2 = r2_score(final_plot_df['Actual'], final_plot_df['Predicted'])
 
-    # Set labels and title
-    axes[i].set_xlabel(f'Actual {model.final_target}')
-    axes[i].set_ylabel(f'Predicted {model.final_target}')
-    axes[i].set_title(f'Layer 2: {model.final_target}\nR² = {r2:.4f}')
-    axes[i].grid(True, linestyle='--', alpha=0.7)
+    # Set labels and title with improved styling
+    axes[i].set_xlabel(f'Actual {model.final_target}', fontsize=12)
+    axes[i].set_ylabel(f'Predicted {model.final_target}', fontsize=12)
+    axes[i].set_title(f'Layer 2: {model.final_target}\nR² = {r2:.4f}', fontsize=14)
+
+    # Enhance grid
+    axes[i].grid(True, linestyle='--', alpha=0.3, color='gray')
+
+    # Set equal aspect ratio for better visualization
+    axes[i].set_aspect('equal', adjustable='box')
 
     # Hide unused subplots
     for j in range(i + 1, len(axes)):
         axes[j].set_visible(False)
 
-    # Add a title to the figure
-    plt.suptitle('Actual vs Predicted Values for Two-Layer Model', fontsize=16, y=1.05)
+    # Apply seaborn styling
+    sns.despine()  # Remove top and right spines for cleaner look
+    sns.set_style("whitegrid")  # Set seaborn style for the plots
 
-    # Adjust layout and show plot
+    # Adjust layout first
     plt.tight_layout()
+
+    # CHANGES HERE: Adjust the spaces between elements
+    # Reduce the top margin to bring plots closer to the title
+    plt.subplots_adjust(top=0.9, hspace=0.2)
+
+    # Add a title to the figure with improved styling and reduced y position
+    # Lower y value brings the title closer to the plots
+    plt.suptitle('Actual vs. Predicted Values for Two-Layer ESG Model',
+                fontsize=18, fontweight='bold', y=0.98)  # Changed from 1.05 to 0.98
+
+    # Add a subtitle explaining the plot
+    plt.figtext(0.5, 0.01,
+               'Points on the red dashed line represent perfect predictions',
+               ha='center', fontsize=12, fontstyle='italic')
+
     plt.show()
 
 def plot_feature_importances(model, top_n=15, figsize=(15, 18), color_palette='viridis'):
