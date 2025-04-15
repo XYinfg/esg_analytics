@@ -9,6 +9,7 @@ plotly>=5.3.0
 # Jupyter notebook
 jupyter>=1.0.0
 notebook>=6.4.0
+voila>=0.2.0
 
 # Optional: For improved notebook experience
 jupyterlab>=3.0.0
