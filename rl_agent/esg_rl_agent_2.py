@@ -33,7 +33,7 @@ random.seed(42)
 # Enhanced ESG Data Analyzer with Data-Driven Optimizations
 class ESGDataAnalyzer:
     """Analyzes ESG dataset to extract patterns, benchmarks, and calibrate action effects with data-driven approaches"""
-    
+
     def __init__(self, data, scale_factor=0.1):
         """
         Initialize the ESG data analyzer.
@@ -45,21 +45,21 @@ class ESGDataAnalyzer:
         self.data = data.copy()
         self.scale_factor = scale_factor
         self.esg_metrics = [
-            'BESG ESG Score', 'BESG Environmental Pillar Score', 'BESG Social Pillar Score', 
+            'BESG ESG Score', 'BESG Environmental Pillar Score', 'BESG Social Pillar Score',
             'BESG Governance Pillar Score', 'ESG Disclosure Score'
         ]
 
         # Updated environmental metrics based on variable importance
         self.environmental_metrics = [
-            'Nitrogen Oxide Emissions', 'GHG Scope 1', 'GHG Scope 2 Location-Based', 'GHG Scope 3', 
-            'Total Water Withdrawal', 'Total Waste', 'Waste Recycled', 
+            'Nitrogen Oxide Emissions', 'GHG Scope 1', 'GHG Scope 2 Location-Based', 'GHG Scope 3',
+            'Total Water Withdrawal', 'Total Waste', 'Waste Recycled',
             'Renewable Energy Use'
         ]
 
         # Updated social metrics based on variable importance
         self.social_metrics = [
             'Total Recordable Incident Rate - Employees', 'Fatalities - Employees',
-            'Pct Women in Workforce', 'Pct Women in Senior Management', 
+            'Pct Women in Workforce', 'Pct Women in Senior Management',
             'Employee Turnover Pct', 'Community Spending',
             'Number of Female Executives'
         ]
@@ -175,36 +175,36 @@ class ESGDataAnalyzer:
 
         # NEW: Analyze pillar balance importance
         self.pillar_balance_analysis = self._analyze_pillar_balance_importance()
-    
+
     def _preprocess_data(self):
         """Preprocess the dataset - handle missing values, outliers, etc."""
         # Convert relevant columns to numeric
         numeric_cols = (
-            self.esg_metrics + self.environmental_metrics + 
-            self.social_metrics + self.governance_metrics + 
+            self.esg_metrics + self.environmental_metrics +
+            self.social_metrics + self.governance_metrics +
             self.financial_metrics
         )
-        
+
         for col in numeric_cols:
             if col in self.data.columns:
                 self.data[col] = pd.to_numeric(self.data[col], errors='coerce')
-        
+
         # Scale ESG scores to 0-10 range if they're on 0-100 scale
         for col in self.esg_metrics:
             if col in self.data.columns:
                 # Check if the column has values > 10 (likely on 0-100 scale)
                 if self.data[col].max() > 10:
                     self.data[col] = self.data[col] * self.scale_factor
-        
+
         # Fill missing values with reasonable defaults
         if 'BESG ESG Score' in self.data.columns:
             self.data['BESG ESG Score'].fillna(self.data['BESG ESG Score'].mean(), inplace=True)
-        
+
         # Handle any remaining missing values in key metrics
         for col in self.esg_metrics:
             if col in self.data.columns:
                 self.data[col].fillna(self.data[col].mean(), inplace=True)
-    
+
     def _infer_industries(self):
         """Infer industry groupings using clustering if industry column not available"""
         # Get relevant metrics for clustering
@@ -214,35 +214,35 @@ class ESGDataAnalyzer:
             self.industries = np.array(['Unknown'])
             self.data['Industry'] = 'Unknown'
             return
-        
+
         # Get average metrics by company
         company_avg = self.data.groupby('Company')[cluster_metrics].mean().reset_index()
-        
+
         # Drop companies with missing values
         company_avg.dropna(inplace=True)
-        
+
         if len(company_avg) < 5:
             # Not enough data to cluster
             self.industries = np.array(['Unknown'])
             self.data['Industry'] = 'Unknown'
             return
-        
+
         # Scale the data
         X = company_avg[cluster_metrics].values
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
-        
+
         # Determine optimal number of clusters (simple method)
         max_clusters = min(10, len(company_avg) // 2)
         if max_clusters < 2:
             max_clusters = 2
-            
+
         inertias = []
         for k in range(2, max_clusters + 1):
             kmeans = KMeans(n_clusters=k, random_state=42)
             kmeans.fit(X_scaled)
             inertias.append(kmeans.inertia_)
-        
+
         # Simple elbow method
         if len(inertias) > 1:
             # Calculate delta of inertias
@@ -251,32 +251,32 @@ class ESGDataAnalyzer:
             elbow = np.argmin(deltas) + 2
         else:
             elbow = 2
-        
+
         # Cluster companies
         kmeans = KMeans(n_clusters=elbow, random_state=42)
         company_avg['Industry'] = kmeans.fit_predict(X_scaled)
         company_avg['Industry'] = 'Cluster_' + company_avg['Industry'].astype(str)
-        
+
         # Map industry clusters back to original data
         industry_map = dict(zip(company_avg['Company'], company_avg['Industry']))
         self.data['Industry'] = self.data['Company'].map(industry_map)
         self.data['Industry'].fillna('Unknown', inplace=True)
-        
+
         self.industries = self.data['Industry'].unique()
-    
+
     def _calculate_industry_benchmarks(self):
         """Calculate industry benchmarks for ESG metrics"""
         benchmarks = {}
-        
+
         if 'Industry' not in self.data.columns:
             return benchmarks
-        
+
         # For each industry, calculate percentiles for ESG metrics
         for industry in self.industries:
             industry_data = self.data[self.data['Industry'] == industry]
             if len(industry_data) == 0:
                 continue
-                
+
             industry_benchmarks = {}
             for metric in self.esg_metrics:
                 if metric in self.data.columns:
@@ -285,44 +285,44 @@ class ESGDataAnalyzer:
                     p50 = industry_data[metric].quantile(0.50)
                     p75 = industry_data[metric].quantile(0.75)
                     p90 = industry_data[metric].quantile(0.90)
-                    
+
                     industry_benchmarks[metric] = {
                         'p25': p25, 'p50': p50, 'p75': p75, 'p90': p90,
                         'mean': industry_data[metric].mean(),
                         'std': industry_data[metric].std()
                     }
-            
+
             benchmarks[industry] = industry_benchmarks
-            
+
         return benchmarks
-    
+
     def _create_company_similarity_matrix(self):
         """Create a matrix of company similarities based on ESG metrics"""
         # Get all companies
         companies = self.data['Company'].unique()
         similarity_matrix = pd.DataFrame(index=companies, columns=companies)
-        
+
         # Features to use for similarity
         features = [col for col in self.esg_metrics if col in self.data.columns]
-        
+
         if not features:
             # No ESG metrics available, can't compute similarity
             return pd.DataFrame()
-        
+
         # Get latest data for each company
         latest_data = {}
         for company in companies:
             company_data = self.data[self.data['Company'] == company]
             if len(company_data) == 0:
                 continue
-                
+
             # Get most recent year's data
             latest_year = company_data['Year'].max()
             latest = company_data[company_data['Year'] == latest_year][features].values
-            
+
             if len(latest) > 0 and not np.isnan(latest).all():
                 latest_data[company] = latest[0]
-        
+
         # Calculate cosine similarity between companies
         for company1 in latest_data:
             for company2 in latest_data:
@@ -332,13 +332,13 @@ class ESGDataAnalyzer:
                     # Calculate cosine similarity
                     v1 = latest_data[company1].reshape(1, -1)
                     v2 = latest_data[company2].reshape(1, -1)
-                    
+
                     # Handle potential NaNs
                     mask = ~np.isnan(v1) & ~np.isnan(v2)
                     if np.any(mask):
                         v1_clean = v1[mask].reshape(1, -1)
                         v2_clean = v2[mask].reshape(1, -1)
-                        
+
                         if v1_clean.size > 0 and v2_clean.size > 0:
                             try:
                                 sim = cosine_similarity(v1_clean, v2_clean)[0][0]
@@ -349,56 +349,56 @@ class ESGDataAnalyzer:
                             similarity_matrix.loc[company1, company2] = np.nan
                     else:
                         similarity_matrix.loc[company1, company2] = np.nan
-        
+
         # Fill NaNs with 0 (no similarity)
         similarity_matrix.fillna(0, inplace=True)
-        
+
         return similarity_matrix
-    
+
     def _calculate_yearly_changes(self):
         """Calculate typical year-over-year changes in ESG metrics"""
         yearly_changes = {}
-        
+
         # Get all numeric columns
         numeric_cols = (
-            self.esg_metrics + self.environmental_metrics + 
+            self.esg_metrics + self.environmental_metrics +
             self.social_metrics + self.governance_metrics
         )
-        
+
         available_cols = [col for col in numeric_cols if col in self.data.columns]
-        
+
         # Calculate year-over-year changes for each company
         companies = self.data['Company'].unique()
-        
+
         for company in companies:
             company_data = self.data[self.data['Company'] == company].sort_values('Year')
-            
+
             if len(company_data) < 2:
                 continue
-                
+
             # Calculate changes for each column
             for col in available_cols:
                 if col not in yearly_changes:
                     yearly_changes[col] = []
-                
+
                 # Calculate diff and drop first row (which will be NaN)
                 diffs = company_data[col].diff().dropna().tolist()
                 yearly_changes[col].extend(diffs)
-        
+
         # Calculate statistics for each metric
         changes_stats = {}
         for col, changes in yearly_changes.items():
             if not changes:
                 continue
-                
+
             # Remove outliers (simple method: keep values within 3 std of mean)
             changes = np.array(changes)
             mean = np.mean(changes)
             std = np.std(changes)
-            
+
             # Filter out extreme outliers
             filtered_changes = changes[(changes >= mean - 3*std) & (changes <= mean + 3*std)]
-            
+
             if len(filtered_changes) > 0:
                 changes_stats[col] = {
                     'mean': np.mean(filtered_changes),
@@ -410,36 +410,36 @@ class ESGDataAnalyzer:
                     'min': np.min(filtered_changes),
                     'max': np.max(filtered_changes)
                 }
-                
+
         return changes_stats
-    
+
     def _analyze_esg_financial_correlations(self):
         """Analyze correlations between ESG metrics and financial performance"""
         correlations = {}
-        
+
         # Financial metrics to analyze
         fin_metrics = [col for col in self.financial_metrics if col in self.data.columns]
-        
+
         if not fin_metrics:
             return correlations
-            
+
         # ESG metrics to correlate
         esg_cols = [col for col in self.esg_metrics if col in self.data.columns]
-        
+
         if not esg_cols:
             return correlations
-            
+
         # Calculate correlations
         corr_data = self.data[esg_cols + fin_metrics].corr()
-        
+
         # Extract correlations between ESG and financial metrics
         for esg_col in esg_cols:
             correlations[esg_col] = {}
             for fin_col in fin_metrics:
                 correlations[esg_col][fin_col] = corr_data.loc[esg_col, fin_col]
-                
+
         return correlations
-    
+
     def _identify_effective_actions(self):
         """Identify the most effective ESG actions based on historical data"""
         effective_actions = {
@@ -447,24 +447,24 @@ class ESGDataAnalyzer:
             'social': [],
             'governance': []
         }
-        
+
         # Find companies with significant ESG improvement
         if 'BESG ESG Score' in self.data.columns:
             # Group by company
             company_data = self.data.groupby('Company')
-            
+
             for company, group in company_data:
                 if len(group) < 2:
                     continue
-                    
+
                 # Sort by year
                 group = group.sort_values('Year')
-                
+
                 # Calculate overall improvement
                 esg_start = group['BESG ESG Score'].iloc[0]
                 esg_end = group['BESG ESG Score'].iloc[-1]
                 esg_improvement = esg_end - esg_start
-                
+
                 # Only consider significant improvements
                 if esg_improvement > 1.0:  # More than 1 point improvement on 0-10 scale
                     # Check where the improvement came from
@@ -478,19 +478,19 @@ class ESGDataAnalyzer:
                     ):
                         # Check available metrics
                         available_metrics = [m for m in metrics if m in self.data.columns]
-                        
+
                         if not available_metrics:
                             continue
-                            
+
                         # Find metrics with significant change
                         changed_metrics = []
                         for metric in available_metrics:
                             if metric not in group.columns:
                                 continue
-                                
+
                             start_val = group[metric].iloc[0]
                             end_val = group[metric].iloc[-1]
-                            
+
                             # Check if numerical
                             if pd.notnull(start_val) and pd.notnull(end_val):
                                 # Calculate relative change
@@ -498,7 +498,7 @@ class ESGDataAnalyzer:
                                     rel_change = (end_val - start_val) / abs(start_val)
                                 else:
                                     rel_change = np.inf if end_val > 0 else -np.inf if end_val < 0 else 0
-                                
+
                                 # Significant change threshold depends on the metric
                                 if (metric == 'BESG Environmental Pillar Score' and end_val - start_val > 0.5) or \
                                    (metric == 'BESG Social Pillar Score' and end_val - start_val > 0.5) or \
@@ -509,7 +509,7 @@ class ESGDataAnalyzer:
                                    (metric == 'Employee Turnover Pct' and rel_change < -0.1) or \
                                    (metric == 'Number of Independent Directors' and rel_change > 0.1):
                                     changed_metrics.append((metric, end_val - start_val))
-                        
+
                         if changed_metrics:
                             # Add to effective actions
                             effective_actions[pillar].append({
@@ -518,17 +518,17 @@ class ESGDataAnalyzer:
                                 'metrics': changed_metrics,
                                 'year_span': (group['Year'].iloc[0], group['Year'].iloc[-1])
                             })
-                                
+
         # Sort effective actions by improvement magnitude
         for pillar in effective_actions:
             effective_actions[pillar] = sorted(
-                effective_actions[pillar], 
-                key=lambda x: x['improvement'], 
+                effective_actions[pillar],
+                key=lambda x: x['improvement'],
                 reverse=True
             )
-            
+
         return effective_actions
-    
+
     # NEW: Data-driven analysis of ESG improvement patterns
     def _analyze_improvement_factors(self):
         """Analyze how ESG improvement varies at different score levels"""
@@ -603,13 +603,13 @@ class ESGDataAnalyzer:
             (8, 9): 0.5,
             (9, 10): 0.3    # Very hard to improve near perfect scores
         }
-    
+
     # NEW: Data-driven analysis of financial impacts
     def _analyze_financial_impacts(self):
         """Analyze financial impacts of ESG initiatives based on historical data"""
         if 'Net Income, Adj' not in self.data.columns or 'BESG ESG Score' not in self.data.columns:
             return {}
-            
+
         # Initiative mapping based on metric changes
         initiative_indicators = {
             'renewable_investment': ['Renewable Energy Use', 'GHG Scope 1', 'GHG Scope 2 Location-Based'],
@@ -619,34 +619,34 @@ class ESGDataAnalyzer:
             'employee_wellbeing': ['Employee Turnover Pct'],
             'board_independence': ['Number of Independent Directors']
         }
-        
+
         # Detect initiatives based on significant metric changes
         for company in self.data['Company'].unique():
             for initiative, metrics in initiative_indicators.items():
                 init_col = f"{initiative}_implemented"
                 self.data[init_col] = 0
-                
+
         # Identify implementation years for each company and initiative
         for company in self.data['Company'].unique():
             company_data = self.data[self.data['Company'] == company].sort_values('Year')
-            
+
             if len(company_data) < 2:
                 continue
-                
+
             for initiative, metrics in initiative_indicators.items():
                 available_metrics = [m for m in metrics if m in company_data.columns]
-                
+
                 if not available_metrics:
                     continue
-                    
+
                 for i in range(len(company_data) - 1):
                     # Check for significant improvements in relevant metrics
                     significant_changes = 0
-                    
+
                     for metric in available_metrics:
                         current_val = company_data[metric].iloc[i]
                         next_val = company_data[metric].iloc[i+1]
-                        
+
                         if pd.notnull(current_val) and pd.notnull(next_val):
                             # Check for significant improvement
                             if metric == 'Renewable Energy Use' and next_val > current_val + 5:
@@ -665,57 +665,57 @@ class ESGDataAnalyzer:
                                 significant_changes += 1
                             elif metric == 'Number of Independent Directors' and next_val > current_val:
                                 significant_changes += 1
-                    
+
                     # If enough metrics improved, mark as initiative implementation
                     if significant_changes >= min(2, len(available_metrics)):
                         implementation_year = company_data['Year'].iloc[i+1]
-                        self.data.loc[(self.data['Company'] == company) & 
-                                      (self.data['Year'] == implementation_year), 
+                        self.data.loc[(self.data['Company'] == company) &
+                                      (self.data['Year'] == implementation_year),
                                       f"{initiative}_implemented"] = 1
-        
+
         # Analyze financial impacts
         financial_impacts = {}
-        
+
         for initiative in initiative_indicators.keys():
             implementation_col = f"{initiative}_implemented"
-            
+
             # Skip if no implementations detected
             if implementation_col not in self.data.columns or self.data[implementation_col].sum() == 0:
                 continue
-                
+
             # Get companies that implemented this initiative
             companies_with_initiative = self.data[self.data[implementation_col] == 1]['Company'].unique()
-            
+
             if len(companies_with_initiative) == 0:
                 continue
-                
+
             # Calculate financial impacts
             immediate_impacts = []  # Same year
             year1_impacts = []      # One year later
             year2_impacts = []      # Two years later
-            
+
             for company in companies_with_initiative:
                 company_data = self.data[self.data['Company'] == company].sort_values('Year')
                 implementation_years = company_data[company_data[implementation_col] == 1]['Year'].tolist()
-                
+
                 for impl_year in implementation_years:
                     # Get financial data before implementation
                     prev_years = company_data[company_data['Year'] < impl_year]['Year'].tolist()
                     if not prev_years:
                         continue
-                    
+
                     prev_year = max(prev_years)
                     prev_income = company_data[company_data['Year'] == prev_year]['Net Income, Adj'].iloc[0]
-                    
+
                     # Get financial data after implementation
                     impl_income = company_data[company_data['Year'] == impl_year]['Net Income, Adj'].iloc[0]
-                    
+
                     year1_data = company_data[company_data['Year'] == impl_year + 1]
                     year1_income = year1_data['Net Income, Adj'].iloc[0] if not year1_data.empty else None
-                    
+
                     year2_data = company_data[company_data['Year'] == impl_year + 2]
                     year2_income = year2_data['Net Income, Adj'].iloc[0] if not year2_data.empty else None
-                    
+
                     # Calculate relative impacts
                     if prev_income != 0:
                         immediate_impacts.append((impl_income - prev_income) / abs(prev_income))
@@ -723,7 +723,7 @@ class ESGDataAnalyzer:
                             year1_impacts.append((year1_income - prev_income) / abs(prev_income))
                         if year2_income is not None:
                             year2_impacts.append((year2_income - prev_income) / abs(prev_income))
-            
+
             # Store impact data if available
             if immediate_impacts:
                 financial_impacts[initiative] = {
@@ -732,15 +732,15 @@ class ESGDataAnalyzer:
                     'year1': np.median(year1_impacts) if year1_impacts else None,
                     'year2': np.median(year2_impacts) if year2_impacts else None
                 }
-        
+
         # Create default values for missing initiatives based on available data
         all_immediate_impacts = []
         for initiative, impacts in financial_impacts.items():
             all_immediate_impacts.append(impacts['immediate'])
-        
+
         # Use median impact for missing initiatives
         default_impact = np.median(all_immediate_impacts) if all_immediate_impacts else -0.05
-        
+
         # Ensure we have data for all initiatives
         for initiative in initiative_indicators.keys():
             if initiative not in financial_impacts:
@@ -750,9 +750,9 @@ class ESGDataAnalyzer:
                     'year1': default_impact * 0.5,  # Assume recovery in year 1
                     'year2': default_impact * 0.2   # Assume more recovery in year 2
                 }
-        
+
         return financial_impacts
-    
+
     # NEW: Data-driven analysis of pillar balance importance
     def _analyze_pillar_balance_importance(self):
         """Analyze whether balanced or focused ESG approach leads to better outcomes"""
@@ -765,41 +765,41 @@ class ESGDataAnalyzer:
                 'recommendation': 'balanced',
                 'optimal_weight': 1.0
             }
-        
+
         # Track improvements with different balance levels
         balance_improvements = {
             'high_balance': [],    # Low standard deviation between pillars
             'medium_balance': [],  # Medium standard deviation
             'low_balance': []      # High standard deviation (focused approach)
         }
-        
+
         # Analyze for each company year-to-year
         for company in self.data['Company'].unique():
             company_data = self.data[self.data['Company'] == company].sort_values('Year')
-            
+
             if len(company_data) < 2:
                 continue
-                
+
             for i in range(len(company_data) - 1):
                 current_row = company_data.iloc[i]
                 next_row = company_data.iloc[i+1]
-                
+
                 # Calculate pillar balance
                 pillars = ['BESG Environmental Pillar Score', 'BESG Social Pillar Score', 'BESG Governance Pillar Score']
                 pillar_scores = [current_row[p] for p in pillars]
-                
+
                 # Skip if any pillar score is missing
                 if any(pd.isna(score) for score in pillar_scores):
                     continue
-                    
+
                 # Calculate standard deviation as measure of balance
                 pillar_std = np.std(pillar_scores)
-                
+
                 # Calculate ESG improvement
                 current_esg = current_row['BESG ESG Score']
                 next_esg = next_row['BESG ESG Score']
                 improvement = next_esg - current_esg
-                
+
                 # Categorize by balance level
                 if pillar_std < 0.5:  # Highly balanced
                     balance_improvements['high_balance'].append(improvement)
@@ -807,7 +807,7 @@ class ESGDataAnalyzer:
                     balance_improvements['medium_balance'].append(improvement)
                 else:  # Focused/imbalanced
                     balance_improvements['low_balance'].append(improvement)
-        
+
         # Calculate average improvements for each balance level
         avg_improvements = {}
         for balance_level, improvements in balance_improvements.items():
@@ -815,12 +815,12 @@ class ESGDataAnalyzer:
                 avg_improvements[balance_level] = np.mean(improvements)
             else:
                 avg_improvements[balance_level] = 0
-        
+
         # Determine if balance matters
         if avg_improvements.get('high_balance', 0) > avg_improvements.get('low_balance', 0):
             recommendation = 'balanced'
             balance_advantage = avg_improvements.get('high_balance', 0) - avg_improvements.get('low_balance', 0)
-            
+
             # Calculate optimal weight based on advantage magnitude
             if balance_advantage > 0.5:  # Large advantage
                 optimal_weight = 3.0
@@ -832,7 +832,7 @@ class ESGDataAnalyzer:
             recommendation = 'focused'
             balance_advantage = avg_improvements.get('low_balance', 0) - avg_improvements.get('high_balance', 0)
             optimal_weight = 0.1  # Minimal penalty for imbalance
-        
+
         return {
             'balanced_approach_avg_improvement': avg_improvements.get('high_balance', 0),
             'focused_approach_avg_improvement': avg_improvements.get('low_balance', 0),
@@ -841,7 +841,7 @@ class ESGDataAnalyzer:
             'recommendation': recommendation,
             'optimal_weight': optimal_weight
         }
-    
+
     def get_improvement_factor(self, current_score):
         """Get data-driven multiplier for ESG score improvement based on current score"""
         # FIXED: Ensure the score is in the valid range
@@ -855,78 +855,78 @@ class ESGDataAnalyzer:
 
         # Default factor if no match
         return 1.0
-    
+
     def get_financial_impact(self, initiative, timeframe='immediate'):
         """Get data-driven financial impact for a specific initiative"""
         if initiative in self.financial_impacts:
             if timeframe in self.financial_impacts[initiative]:
                 return self.financial_impacts[initiative][timeframe]
-        
+
         # Default impact if no data
         return -0.05
-    
+
     def get_pillar_balance_recommendation(self):
         """Get data-driven recommendation for pillar balance importance"""
         return self.pillar_balance_analysis
-    
+
     def get_similar_companies(self, company, top_n=5):
         """Get most similar companies to the given company"""
         if self.company_similarity.empty or company not in self.company_similarity.index:
             return []
-            
+
         similarities = self.company_similarity.loc[company].sort_values(ascending=False)
         # Skip the first one (which is the company itself)
         return similarities.index[1:top_n+1].tolist()
-    
+
     def get_industry_benchmark(self, company, metric):
         """Get industry benchmark for a company and metric"""
         if 'Industry' not in self.data.columns or company not in self.data['Company'].values:
             return None
-            
+
         # Get company's industry
         industry = self.data[self.data['Company'] == company]['Industry'].iloc[0]
-        
+
         # Return benchmark if available
         if industry in self.industry_benchmarks and metric in self.industry_benchmarks[industry]:
             return self.industry_benchmarks[industry][metric]
-        
+
         return None
-    
+
     def get_typical_change(self, metric):
         """Get typical year-over-year change for a metric"""
         if metric in self.yearly_changes:
             return self.yearly_changes[metric]
-        
+
         return None
-    
+
     def get_financial_correlation(self, esg_metric):
         """Get financial correlations for an ESG metric"""
         if esg_metric in self.esg_financial_correlations:
             return self.esg_financial_correlations[esg_metric]
-        
+
         return None
-    
+
     def get_effective_actions_for_pillar(self, pillar):
         """Get effective actions for a specific pillar"""
         if pillar in self.effective_actions:
             return self.effective_actions[pillar]
-        
+
         return []
-    
+
     def calibrate_action_effects(self):
         """Calibrate action effects based on historical data and variable importance"""
         calibrated_effects = {}
-        
+
         # Environmental actions
         env_actions = {
             'Emissions Reduction Program': {
-                'metrics': ['Nitrogen Oxide Emissions', 'GHG Scope 1', 'GHG Scope 2 Location-Based', 
+                'metrics': ['Nitrogen Oxide Emissions', 'GHG Scope 1', 'GHG Scope 2 Location-Based',
                            'BESG Environmental Pillar Score'],
                 'direction': [-1, -1, -1, 1],  # 1 for increase, -1 for decrease
                 'initiative_type': 'emissions_reduction'
             },
             'Renewable Energy Investment': {
-                'metrics': ['Renewable Energy Use', 'GHG Scope 1', 'GHG Scope 2 Location-Based', 
+                'metrics': ['Renewable Energy Use', 'GHG Scope 1', 'GHG Scope 2 Location-Based',
                            'BESG Environmental Pillar Score'],
                 'direction': [1, -1, -1, 1],
                 'initiative_type': 'renewable_investment'
@@ -952,23 +952,23 @@ class ESGDataAnalyzer:
                 'initiative_type': 'emissions_reduction'
             }
         }
-        
+
         # Social actions
         soc_actions = {
             'Workplace Safety Program': {
-                'metrics': ['Total Recordable Incident Rate - Employees', 'Fatalities - Employees', 
+                'metrics': ['Total Recordable Incident Rate - Employees', 'Fatalities - Employees',
                           'BESG Social Pillar Score'],
                 'direction': [-1, -1, 1],
                 'initiative_type': 'workplace_safety'
             },
             'Diversity & Inclusion Program': {
-                'metrics': ['Pct Women in Workforce', 'Pct Women in Senior Management', 
+                'metrics': ['Pct Women in Workforce', 'Pct Women in Senior Management',
                           'Number of Female Executives', 'BESG Social Pillar Score'],
                 'direction': [1, 1, 1, 1],
                 'initiative_type': 'diversity_inclusion'
             },
             'Employee Wellbeing Initiative': {
-                'metrics': ['Employee Turnover Pct', 'Total Recordable Incident Rate - Employees', 
+                'metrics': ['Employee Turnover Pct', 'Total Recordable Incident Rate - Employees',
                           'BESG Social Pillar Score'],
                 'direction': [-1, -1, 1],
                 'initiative_type': 'employee_wellbeing'
@@ -979,7 +979,7 @@ class ESGDataAnalyzer:
                 'initiative_type': 'diversity_inclusion'
             },
             'Worker Safety Program': {
-                'metrics': ['Fatalities - Employees', 'Total Recordable Incident Rate - Employees', 
+                'metrics': ['Fatalities - Employees', 'Total Recordable Incident Rate - Employees',
                           'BESG Social Pillar Score'],
                 'direction': [-1, -1, 1],
                 'initiative_type': 'workplace_safety'
@@ -990,11 +990,11 @@ class ESGDataAnalyzer:
                 'initiative_type': 'employee_wellbeing'
             }
         }
-        
+
         # Governance actions
         gov_actions = {
             'Board Independence Enhancement': {
-                'metrics': ['Number of Independent Directors', 'Number of Non Executive Directors on Board', 
+                'metrics': ['Number of Independent Directors', 'Number of Non Executive Directors on Board',
                           'BESG Governance Pillar Score'],
                 'direction': [1, 1, 1],
                 'initiative_type': 'board_independence'
@@ -1010,7 +1010,7 @@ class ESGDataAnalyzer:
                 'initiative_type': 'audit_improvement'
             },
             'Board Effectiveness Program': {
-                'metrics': ['Number of Board Meetings for the Year', 'Compensation Committee Meeting Attendance %', 
+                'metrics': ['Number of Board Meetings for the Year', 'Compensation Committee Meeting Attendance %',
                           'BESG Governance Pillar Score'],
                 'direction': [1, 1, 1],
                 'initiative_type': 'board_effectiveness'
@@ -1031,39 +1031,39 @@ class ESGDataAnalyzer:
                 'initiative_type': 'board_independence'
             }
         }
-        
+
         # Integrated actions
         int_actions = {
             'Comprehensive ESG Disclosure': {
-                'metrics': ['ESG Disclosure Score', 'Environmental Disclosure Score', 'Social Disclosure Score', 
+                'metrics': ['ESG Disclosure Score', 'Environmental Disclosure Score', 'Social Disclosure Score',
                           'Governance Disclosure Score', 'BESG ESG Score', 'BESG Environmental Pillar Score',
                           'BESG Social Pillar Score', 'BESG Governance Pillar Score'],
                 'direction': [1, 1, 1, 1, 1, 1, 1, 1],
                 'initiative_type': 'esg_disclosure'
             },
             'Integrated Sustainability Strategy': {
-                'metrics': ['BESG Environmental Pillar Score', 'BESG Social Pillar Score', 
+                'metrics': ['BESG Environmental Pillar Score', 'BESG Social Pillar Score',
                          'BESG Governance Pillar Score', 'BESG ESG Score'],
                 'direction': [1, 1, 1, 1],
                 'initiative_type': 'sustainability_strategy'
             }
         }
-        
+
         # Combine all actions
         all_actions = {}
         all_actions.update(env_actions)
         all_actions.update(soc_actions)
         all_actions.update(gov_actions)
         all_actions.update(int_actions)
-        
+
         # Calibrate each action
         for action_name, action_info in all_actions.items():
             calibrated_effects[action_name] = {}
-            
+
             for metric, direction in zip(action_info['metrics'], action_info['direction']):
                 # Get typical change for this metric
                 typical_change = self.get_typical_change(metric)
-                
+
                 # Use feature importance to scale the effect if available
                 importance_factor = 1.0
                 if metric in self.feature_importance.get('environmental', {}) and 'Environmental' in action_name:
@@ -1072,7 +1072,7 @@ class ESGDataAnalyzer:
                     importance_factor = self.feature_importance['social'].get(metric, 1.0) * 5
                 elif metric in self.feature_importance.get('governance', {}) and 'Governance' in action_name:
                     importance_factor = self.feature_importance['governance'].get(metric, 1.0) * 5
-                
+
                 if typical_change:
                     # Use percentile depending on direction and effectiveness
                     if direction > 0:  # Want to increase
@@ -1089,11 +1089,11 @@ class ESGDataAnalyzer:
                             change = -abs(typical_change['p25']) * importance_factor
                         else:
                             change = typical_change.get('min', -0.1) * importance_factor
-                            
+
                     # Make sure change is in the right direction
                     if (direction > 0 and change < 0) or (direction < 0 and change > 0):
                         change = -change
-                        
+
                     # Special scaling for ESG scores
                     if metric in self.esg_metrics:
                         # Make changes more impactful for direct action on a pillar
@@ -1106,7 +1106,7 @@ class ESGDataAnalyzer:
                         elif metric == 'BESG ESG Score':
                             # Overall ESG score changes should be smaller
                             change = min(change, 0.15)
-                            
+
                     calibrated_effects[action_name][metric] = change
                 else:
                     # Default values if no data available, scaled by feature importance
@@ -1163,38 +1163,38 @@ class ESGDataAnalyzer:
                     else:
                         # Generic default
                         calibrated_effects[action_name][metric] = 0.1 * direction * importance_factor
-            
+
             # Store the initiative type for financial impact reference
             calibrated_effects[action_name]['_initiative_type'] = action_info.get('initiative_type', 'renewable_investment')
-        
+
         return calibrated_effects
 
     def generate_esg_insights(self, company=None):
         """Generate insights about ESG patterns and opportunities"""
         insights = []
-        
+
         # If company is specified, generate company-specific insights
         if company is not None:
             # Check if company exists in the data
             if company not in self.data['Company'].values:
                 insights.append(f"Company '{company}' not found in the dataset.")
                 return insights
-                
+
             company_data = self.data[self.data['Company'] == company].sort_values('Year')
-            
+
             if len(company_data) == 0:
                 insights.append(f"No data available for '{company}'.")
                 return insights
-                
+
             # Get latest year data
             latest_year = company_data['Year'].max()
             latest_data = company_data[company_data['Year'] == latest_year]
-            
+
             # 1. Overall ESG performance
             if 'BESG ESG Score' in latest_data.columns:
                 esg_score = latest_data['BESG ESG Score'].iloc[0]
                 insights.append(f"Overall ESG Score: {esg_score:.2f} (out of 10)")
-                
+
                 # Compare to industry benchmarks
                 industry_benchmark = self.get_industry_benchmark(company, 'BESG ESG Score')
                 if industry_benchmark:
@@ -1206,43 +1206,43 @@ class ESGDataAnalyzer:
                         insights.append("ESG performance is ABOVE AVERAGE compared to industry peers.")
                     else:
                         insights.append("ESG performance is BELOW AVERAGE compared to industry peers.")
-            
+
             # 2. Pillar analysis
             pillars = ['BESG Environmental Pillar Score', 'BESG Social Pillar Score', 'BESG Governance Pillar Score']
             available_pillars = [p for p in pillars if p in latest_data.columns]
-            
+
             if available_pillars:
                 pillar_scores = {p: latest_data[p].iloc[0] for p in available_pillars}
                 best_pillar = max(pillar_scores.items(), key=lambda x: x[1])
                 worst_pillar = min(pillar_scores.items(), key=lambda x: x[1])
-                
+
                 insights.append(f"Strongest pillar: {best_pillar[0].split(' ')[1]} ({best_pillar[1]:.2f})")
                 insights.append(f"Weakest pillar: {worst_pillar[0].split(' ')[1]} ({worst_pillar[1]:.2f})")
-                
+
                 # Pillar-specific insights
                 for pillar, score in pillar_scores.items():
                     name = pillar.split(' ')[1]
                     benchmark = self.get_industry_benchmark(company, pillar)
-                    
+
                     if benchmark:
                         if score < benchmark['p25']:
                             insights.append(f"⚠️ {name} performance is in the BOTTOM 25% of industry peers.")
                         elif score > benchmark['p75']:
                             insights.append(f"✅ {name} performance is in the TOP 25% of industry peers.")
-            
+
             # 3. Historical trend analysis
             if len(company_data) > 1 and 'BESG ESG Score' in company_data.columns:
                 esg_trend = company_data['BESG ESG Score'].tolist()
                 first_score = esg_trend[0]
                 last_score = esg_trend[-1]
-                
+
                 if last_score > first_score:
                     insights.append(f"✅ ESG Score has IMPROVED from {first_score:.2f} to {last_score:.2f} over {len(esg_trend)} years.")
                 elif last_score < first_score:
                     insights.append(f"⚠️ ESG Score has DECLINED from {first_score:.2f} to {last_score:.2f} over {len(esg_trend)} years.")
                 else:
                     insights.append(f"ESG Score has remained STABLE at {last_score:.2f} over {len(esg_trend)} years.")
-                
+
                 # Check for specific improvement areas
                 for metric in self.environmental_metrics + self.social_metrics + self.governance_metrics:
                     if metric in company_data.columns:
@@ -1250,7 +1250,7 @@ class ESGDataAnalyzer:
                         if len(values) > 1 and not np.isnan(values).all():
                             first_val = values[0]
                             last_val = values[-1]
-                            
+
                             if not pd.isna(first_val) and not pd.isna(last_val):
                                 if metric == 'Renewable Energy Use' and last_val > first_val + 5:
                                     insights.append(f"✅ Significant increase in renewable energy use from {first_val:.1f}% to {last_val:.1f}%.")
@@ -1260,10 +1260,10 @@ class ESGDataAnalyzer:
                                     insights.append(f"✅ Improved waste recycling from {first_val:.1f}% to {last_val:.1f}%.")
                                 elif metric == 'Employee Turnover Pct' and last_val < first_val * 0.8:
                                     insights.append(f"✅ Reduced employee turnover from {first_val:.1f}% to {last_val:.1f}%.")
-            
+
             # 4. Recommendations for improvement
             insights.append("\nRecommendations for improvement:")
-            
+
             # Find weakest pillar for focused recommendations
             if available_pillars:
                 weakest = worst_pillar[0].split(' ')[1].lower()
@@ -1288,7 +1288,7 @@ class ESGDataAnalyzer:
                             insights.append("- Increase board independence")
                     insights.append("- Strengthen ethics and compliance programs")
                     insights.append("- Improve stakeholder engagement policies")
-                
+
             # 5. Similar companies to learn from
             similar_companies = self.get_similar_companies(company, top_n=3)
             if similar_companies:
@@ -1299,80 +1299,80 @@ class ESGDataAnalyzer:
                         insights.append(f"- {similar_company} (ESG Score: {similar_score:.2f})")
         else:
             # Generate general insights about the dataset
-            
+
             # 1. Overall ESG score distribution
             if 'BESG ESG Score' in self.data.columns:
                 avg_score = self.data['BESG ESG Score'].mean()
                 median_score = self.data['BESG ESG Score'].median()
                 insights.append(f"Average ESG Score across all companies: {avg_score:.2f}")
                 insights.append(f"Median ESG Score: {median_score:.2f}")
-                
+
                 # Top and bottom performers
                 top_companies = self.data.sort_values('BESG ESG Score', ascending=False).drop_duplicates('Company').head(5)
                 bottom_companies = self.data.sort_values('BESG ESG Score').drop_duplicates('Company').head(5)
-                
+
                 insights.append("\nTop 5 ESG performers:")
                 for _, row in top_companies.iterrows():
                     insights.append(f"- {row['Company']}: {row['BESG ESG Score']:.2f}")
-                
+
                 insights.append("\nBottom 5 ESG performers:")
                 for _, row in bottom_companies.iterrows():
                     insights.append(f"- {row['Company']}: {row['BESG ESG Score']:.2f}")
-            
+
             # 2. ESG trends over time
             years = sorted(self.data['Year'].unique())
             if len(years) > 1 and 'BESG ESG Score' in self.data.columns:
                 yearly_avgs = self.data.groupby('Year')['BESG ESG Score'].mean()
-                
+
                 first_year = years[0]
                 last_year = years[-1]
                 first_avg = yearly_avgs[first_year]
                 last_avg = yearly_avgs[last_year]
-                
+
                 if last_avg > first_avg:
                     insights.append(f"\nOverall ESG performance has IMPROVED from {first_avg:.2f} to {last_avg:.2f} between {first_year} and {last_year}.")
                 elif last_avg < first_avg:
                     insights.append(f"\nOverall ESG performance has DECLINED from {first_avg:.2f} to {last_avg:.2f} between {first_year} and {last_year}.")
                 else:
                     insights.append(f"\nOverall ESG performance has remained STABLE between {first_year} and {last_year}.")
-            
+
             # 3. Pillar comparisons
             pillars = ['BESG Environmental Pillar Score', 'BESG Social Pillar Score', 'BESG Governance Pillar Score']
             available_pillars = [p for p in pillars if p in self.data.columns]
-            
+
             if available_pillars:
                 pillar_avgs = {p.split(' ')[1]: self.data[p].mean() for p in available_pillars}
                 sorted_pillars = sorted(pillar_avgs.items(), key=lambda x: x[1], reverse=True)
-                
+
                 insights.append("\nPillar performance across all companies:")
                 for pillar, avg in sorted_pillars:
                     insights.append(f"- {pillar}: {avg:.2f}")
-            
+
             # 4. Most effective ESG improvements
             env_actions = self.get_effective_actions_for_pillar('environmental')
             soc_actions = self.get_effective_actions_for_pillar('social')
             gov_actions = self.get_effective_actions_for_pillar('governance')
-            
+
             insights.append("\nMost effective ESG improvements observed:")
-            
+
             if env_actions:
                 top_env = env_actions[0]
                 insights.append(f"- Environmental: {top_env['company']} improved by {top_env['improvement']:.2f} points")
                 for metric, change in top_env['metrics'][:2]:  # Show top 2 metrics
                     insights.append(f"  • {metric}: {'+' if change > 0 else ''}{change:.2f}")
-                    
+
             if soc_actions:
                 top_soc = soc_actions[0]
                 insights.append(f"- Social: {top_soc['company']} improved by {top_soc['improvement']:.2f} points")
                 for metric, change in top_soc['metrics'][:2]:  # Show top 2 metrics
                     insights.append(f"  • {metric}: {'+' if change > 0 else ''}{change:.2f}")
-                    
+
             if gov_actions:
                 top_gov = gov_actions[0]
                 insights.append(f"- Governance: {top_gov['company']} improved by {top_gov['improvement']:.2f} points")
                 for metric, change in top_gov['metrics'][:2]:  # Show top 2 metrics
                     insights.append(f"  • {metric}: {'+' if change > 0 else ''}{change:.2f}")
-            
+
             # 5. ESG-Financial correlations
             if self.esg_financial_correlations:
                 insights.append("\nESG-Financial performance correlations:")
@@ -1383,19 +1383,19 @@ class ESGDataAnalyzer:
                             direction = "positive" if corr > 0 else "negative"
                             strength = "strong" if abs(corr) > 0.5 else "moderate"
                             insights.append(f"- {name} has a {strength} {direction} correlation ({corr:.2f}) with {fin_metric}")
-            
+
             # 6. NEW: Add insights about improvement patterns
             if self.improvement_factors:
                 insights.append("\nAnalysis of ESG Score Improvement Patterns:")
                 sorted_factors = sorted(self.improvement_factors.items(), key=lambda x: x[1], reverse=True)
-                
+
                 # Find the most and least rewarding score ranges
                 best_range = sorted_factors[0]
                 worst_range = sorted_factors[-1]
-                
+
                 insights.append(f"- Companies with ESG scores between {best_range[0][0]}-{best_range[0][1]} show {best_range[1]:.1f}x faster improvements")
                 insights.append(f"- Companies with ESG scores between {worst_range[0][0]}-{worst_range[0][1]} show {worst_range[1]:.1f}x slower improvements")
-            
+
             # 7. NEW: Add insights about pillar balance
             insights.append("\nAnalysis of Pillar Balance Importance:")
             if self.pillar_balance_analysis['recommendation'] == 'balanced':
@@ -1404,7 +1404,7 @@ class ESGDataAnalyzer:
             else:
                 insights.append(f"- Data shows FOCUSED approach is {-self.pillar_balance_analysis['balance_advantage']:.2f} points more effective")
                 insights.append(f"- Recommendation: Prioritize improvements in weakest pillar first")
-        
+
         return insights
 
 
@@ -1414,8 +1414,8 @@ class ESGDataAnalyzer:
 class DataDrivenESGEnvironment(gym.Env):
     """Data-driven ESG Environment for ESG Score Optimization using real data-driven insights"""
     metadata = {'render.modes': ['human']}
-    
-    def __init__(self, data, company_idx=0, initial_year=2018, max_steps=10, 
+
+    def __init__(self, data, company_idx=0, initial_year=2018, max_steps=10,
                  action_cost_factor=0.005, max_reward=10.0, scale_factor=0.1,
                  diversity_weight=3.0, balance_weight=2.5, verbose=False):
         super(DataDrivenESGEnvironment, self).__init__()
@@ -1748,12 +1748,12 @@ class DataDrivenESGEnvironment(gym.Env):
 
         # Get industry benchmarks for the company
         self.industry_benchmarks = {}
-        for metric in ['BESG ESG Score', 'BESG Environmental Pillar Score', 
+        for metric in ['BESG ESG Score', 'BESG Environmental Pillar Score',
                       'BESG Social Pillar Score', 'BESG Governance Pillar Score']:
             benchmark = self.analyzer.get_industry_benchmark(self.company, metric)
             if benchmark:
                 self.industry_benchmarks[metric] = benchmark
-                
+
         for i in range(60):
             if i not in self.actions:
                 self.actions[i] = {
@@ -1769,7 +1769,7 @@ class DataDrivenESGEnvironment(gym.Env):
 
         # Save similar companies for reference
         self.similar_companies = self.analyzer.get_similar_companies(self.company)
-        
+
     def reset(self):
         """Reset the environment to the initial state"""
         self.current_state = self.initial_state.copy()
@@ -1783,12 +1783,12 @@ class DataDrivenESGEnvironment(gym.Env):
         self.action_cooldown = {i: 0 for i in range(60)}  # All 60 possible actions
         self.future_financial_effects = []
         return self.current_state
-    
+
     def _get_state(self, company, year):
         """Get the state for a specific company and year with enhanced metrics"""
         # Filter data for the specific company and year
         company_data = self.data[(self.data['Company'] == company) & (self.data['Year'] == year)]
-        
+
         if company_data.empty:
             # If no data for this combination, use the latest available data
             company_data = self.data[self.data['Company'] == company].sort_values('Year', ascending=False).iloc[0:1]
@@ -1799,24 +1799,24 @@ class DataDrivenESGEnvironment(gym.Env):
                 company_data = pd.DataFrame({col: [0] for col in self.data.columns})
                 company_data['Company'] = company
                 company_data['Year'] = year
-        
+
         # Updated state columns based on feature importance
         state_cols = [
             # Core ESG metrics
-            'BESG ESG Score', 'BESG Environmental Pillar Score', 'BESG Social Pillar Score', 
-            'BESG Governance Pillar Score', 'ESG Disclosure Score', 'Environmental Disclosure Score', 
-            'Social Disclosure Score', 'Governance Disclosure Score', 
-            
+            'BESG ESG Score', 'BESG Environmental Pillar Score', 'BESG Social Pillar Score',
+            'BESG Governance Pillar Score', 'ESG Disclosure Score', 'Environmental Disclosure Score',
+            'Social Disclosure Score', 'Governance Disclosure Score',
+
             # Top environmental metrics
-            'Nitrogen Oxide Emissions', 'GHG Scope 1', 'GHG Scope 2 Location-Based', 
-            'GHG Scope 3', 'Total Water Withdrawal', 'Total Waste', 'Waste Recycled', 
+            'Nitrogen Oxide Emissions', 'GHG Scope 1', 'GHG Scope 2 Location-Based',
+            'GHG Scope 3', 'Total Water Withdrawal', 'Total Waste', 'Waste Recycled',
             'Renewable Energy Use',
-            
+
             # Top social metrics
             'Total Recordable Incident Rate - Employees', 'Fatalities - Employees',
             'Pct Women in Workforce', 'Pct Women in Senior Management', 'Employee Turnover Pct',
             'Community Spending', 'Number of Female Executives',
-            
+
             # Top governance metrics
             'Number of Independent Directors', 'Board Size', 'Number of Women on Board',
             'Years Auditor Employed', 'Number of Non Executive Directors on Board',
@@ -1824,15 +1824,15 @@ class DataDrivenESGEnvironment(gym.Env):
             'Age of the Oldest Director', 'Number of Board Meetings for the Year',
             'Audit Committee Meetings', 'Compensation Committee Meeting Attendance %',
             'Age of the Youngest Director',
-            
+
             # Financial metrics
             'Revenue, Adj', 'Net Income, Adj', 'Market Cap ($M)'
         ]
-        
+
         # Ensure all columns exist in the data and have numeric values
         available_cols = []
         values = []
-        
+
         for col in state_cols:
             if col in company_data.columns:
                 val = company_data[col].values[0]
@@ -1842,28 +1842,28 @@ class DataDrivenESGEnvironment(gym.Env):
                     # Replace NaN values with zeros
                     if np.isnan(val):
                         val = 0.0
-                    
+
                     # Apply scaling to ESG-related scores to convert from 0-100 to 0-10
-                    if col in ['BESG ESG Score', 'BESG Environmental Pillar Score', 'BESG Social Pillar Score', 
-                              'BESG Governance Pillar Score', 'ESG Disclosure Score', 
+                    if col in ['BESG ESG Score', 'BESG Environmental Pillar Score', 'BESG Social Pillar Score',
+                              'BESG Governance Pillar Score', 'ESG Disclosure Score',
                               'Environmental Disclosure Score', 'Social Disclosure Score', 'Governance Disclosure Score']:
                         if val > 10:  # Only scale if it looks like it's on a 0-100 scale
                             val = val * self.scale_factor  # Scale to 0-10 range
-                    
+
                     available_cols.append(col)
                     values.append(val)
                 except (ValueError, TypeError):
                     # Skip columns with non-numeric values
                     pass
-                
+
         # Create state array with available numeric columns
         state = np.array(values)
-        
+
         # Store the column names for reference
         self.state_cols = available_cols
-        
+
         return state
-    
+
     def _load_feature_importance(self):
         """Load feature importance from CSV files for each pillar"""
         # Initialize dictionaries to store feature importance for each pillar
@@ -1912,18 +1912,18 @@ class DataDrivenESGEnvironment(gym.Env):
         except FileNotFoundError:
             print(f"Warning: Governance feature importance file {gov_file} not found")
 
-    
+
     def _calculate_esg_score(self, state_dict):
         """Calculate ESG score based on various metrics - tailored to industry with feature importance"""
         # If ESG score is directly provided and not being modified, use it
         if 'BESG ESG Score' in state_dict and state_dict.get('_esg_modified', False) is False:
             return state_dict['BESG ESG Score']
-    
+
         # Updated weights based on new data
         env_weight = 0.485  # Environmental weight
         soc_weight = 0.292  # Social weight
         gov_weight = 0.237  # Governance weight
-    
+
         # Environmental component with feature importance
         env_factors = {}
         if hasattr(self.analyzer, 'feature_importance') and 'environmental' in self.analyzer.feature_importance:
@@ -1932,11 +1932,11 @@ class DataDrivenESGEnvironment(gym.Env):
                     # Determine if feature has negative impact (like emissions)
                     is_negative = feature.startswith('GHG') or 'Emissions' in feature or 'Waste' in feature or 'Water' in feature
                     env_factors[feature] = -importance if is_negative else importance
-    
+
         # Add base weight for pillar score if not already included
         if 'BESG Environmental Pillar Score' not in env_factors and 'BESG Environmental Pillar Score' in state_dict:
             env_factors['BESG Environmental Pillar Score'] = 0.5
-    
+
         # Social component with feature importance
         social_factors = {}
         if hasattr(self.analyzer, 'feature_importance') and 'social' in self.analyzer.feature_importance:
@@ -1945,11 +1945,11 @@ class DataDrivenESGEnvironment(gym.Env):
                     # Determine if feature has negative impact
                     is_negative = feature == 'Employee Turnover Pct' or 'Incident Rate' in feature or 'Fatalities' in feature
                     social_factors[feature] = -importance if is_negative else importance
-    
+
         # Add base weight for pillar score if not already included
         if 'BESG Social Pillar Score' not in social_factors and 'BESG Social Pillar Score' in state_dict:
             social_factors['BESG Social Pillar Score'] = 0.6
-    
+
         # Governance component with feature importance
         gov_factors = {}
         if hasattr(self.analyzer, 'feature_importance') and 'governance' in self.analyzer.feature_importance:
@@ -1958,11 +1958,11 @@ class DataDrivenESGEnvironment(gym.Env):
                     # Most governance features are positive except for auditor employed years (want independence)
                     is_negative = feature == 'Years Auditor Employed'
                     gov_factors[feature] = -importance if is_negative else importance
-    
+
         # Add base weight for pillar score if not already included
         if 'BESG Governance Pillar Score' not in gov_factors and 'BESG Governance Pillar Score' in state_dict:
             gov_factors['BESG Governance Pillar Score'] = 0.7
-    
+
         # Fallback to original factors if feature importance dictionaries are empty
         if not env_factors:
             env_factors = {
@@ -1975,7 +1975,7 @@ class DataDrivenESGEnvironment(gym.Env):
                 'Total Waste': -0.03,
                 'Waste Recycled': 0.02
             }
-    
+
         if not social_factors:
             social_factors = {
                 'BESG Social Pillar Score': 0.6,
@@ -1984,14 +1984,14 @@ class DataDrivenESGEnvironment(gym.Env):
                 'Employee Turnover Pct': -0.1,
                 'Community Spending': 0.1
             }
-    
+
         if not gov_factors:
             gov_factors = {
                 'BESG Governance Pillar Score': 0.7,
                 'Board Size': 0.1,
                 'Number of Independent Directors': 0.2
             }
-    
+
         # Normalize each component
         env_score = 0
         env_weight_sum = 0
@@ -1999,14 +1999,14 @@ class DataDrivenESGEnvironment(gym.Env):
         social_weight_sum = 0
         gov_score = 0
         gov_weight_sum = 0
-    
+
         # Calculate environmental score using feature importance
         for factor, weight in env_factors.items():
             if factor in state_dict:
                 value = state_dict[factor]
                 abs_weight = abs(weight)
                 env_weight_sum += abs_weight
-    
+
                 # Normalize negative factors (lower is better)
                 if weight < 0:
                     # Normalize based on typical ranges
@@ -2032,14 +2032,14 @@ class DataDrivenESGEnvironment(gym.Env):
                     elif factor == 'Waste Recycled':
                         value = value / 100
                     env_score += value * weight
-    
+
         # Calculate social score using feature importance
         for factor, weight in social_factors.items():
             if factor in state_dict:
                 value = state_dict[factor]
                 abs_weight = abs(weight)
                 social_weight_sum += abs_weight
-    
+
                 # Normalize negative factors
                 if weight < 0:
                     if factor == 'Employee Turnover Pct':
@@ -2060,14 +2060,14 @@ class DataDrivenESGEnvironment(gym.Env):
                     elif factor == 'Number of Female Executives':
                         value = min(1, value / 5)
                     social_score += value * weight
-    
+
         # Calculate governance score using feature importance
         for factor, weight in gov_factors.items():
             if factor in state_dict:
                 value = state_dict[factor]
                 abs_weight = abs(weight)
                 gov_weight_sum += abs_weight
-    
+
                 # Normalize factors
                 if weight < 0:
                     if factor == 'Years Auditor Employed':
@@ -2096,7 +2096,7 @@ class DataDrivenESGEnvironment(gym.Env):
                     elif factor == 'Number of Executives / Company Managers':
                         value = min(1, value / 20)
                     gov_score += value * weight
-    
+
         # Normalize component scores
         if env_weight_sum > 0:
             env_score = env_score / env_weight_sum
@@ -2104,18 +2104,18 @@ class DataDrivenESGEnvironment(gym.Env):
             social_score = social_score / social_weight_sum
         if gov_weight_sum > 0:
             gov_score = gov_score / gov_weight_sum
-    
+
         # FIX: First calculate a simplified ESG score based directly on pillar scores for validation
         env_pillar = state_dict.get('BESG Environmental Pillar Score', 0) / 10  # Normalize to 0-1
         soc_pillar = state_dict.get('BESG Social Pillar Score', 0) / 10
         gov_pillar = state_dict.get('BESG Governance Pillar Score', 0) / 10
-        
+
         # Direct weighted average of pillar scores
         simplified_esg = (env_weight * env_pillar + soc_weight * soc_pillar + gov_weight * gov_pillar) * 10  # Scale back to 0-10
-    
+
         # Calculate final ESG score (0-10) with updated pillar weightings
         esg_score = (env_weight * env_score + soc_weight * social_score + gov_weight * gov_score) * 10  # Scaled to 0-10
-        
+
         # FIX: Ensure the ESG score doesn't deviate too far from the simplified direct calculation
         # This guards against complex feature calculations resulting in unrealistic ESG scores
         max_deviation = 0.2  # Maximum 20% deviation allowed
@@ -2123,30 +2123,30 @@ class DataDrivenESGEnvironment(gym.Env):
             esg_score = simplified_esg * (1 + max_deviation)
         elif esg_score < simplified_esg * (1 - max_deviation):
             esg_score = simplified_esg * (1 - max_deviation)
-    
+
         # Debug info if verbose mode is enabled
         if hasattr(self, 'verbose') and self.verbose:
             print(f"ESG Calculation - Env: {env_pillar*10:.2f}, Soc: {soc_pillar*10:.2f}, Gov: {gov_pillar*10:.2f}")
             print(f"Simplified ESG: {simplified_esg:.2f}, Full ESG: {esg_score:.2f}")
-    
+
         return max(0, min(10, esg_score))  # Ensure score is in 0-10 range
 
-    
+
     def _calculate_pillar_imbalance(self, state_dict):
         """Calculate the imbalance between ESG pillars"""
         env_score = state_dict.get('BESG Environmental Pillar Score', 0)
         soc_score = state_dict.get('BESG Social Pillar Score', 0)
         gov_score = state_dict.get('BESG Governance Pillar Score', 0)
-        
+
         # Calculate the standard deviation as a measure of imbalance
         scores = [env_score, soc_score, gov_score]
         mean_score = sum(scores) / len(scores)
         variance = sum((x - mean_score) ** 2 for x in scores) / len(scores)
         std_dev = variance ** 0.5
-        
+
         # Return imbalance score (higher means more imbalanced)
         return std_dev
-    
+
     def _identify_weakest_pillar(self, state_dict):
         """Identify the weakest pillar that needs improvement"""
         pillar_scores = {
@@ -2154,15 +2154,15 @@ class DataDrivenESGEnvironment(gym.Env):
             'social': state_dict.get('BESG Social Pillar Score', 0),
             'governance': state_dict.get('BESG Governance Pillar Score', 0)
         }
-        
+
         # Return the pillar with the lowest score
         return min(pillar_scores.items(), key=lambda x: x[1])[0]
-    
+
     def _compare_to_benchmark(self, metric, value):
         """Compare a metric value to industry benchmarks"""
         if metric in self.industry_benchmarks:
             benchmark = self.industry_benchmarks[metric]
-            
+
             if value < benchmark['p25']:
                 return 'bottom_25'
             elif value > benchmark['p75']:
@@ -2171,13 +2171,13 @@ class DataDrivenESGEnvironment(gym.Env):
                 return 'above_average'
             else:
                 return 'below_average'
-        
+
         return None
-    
+
     def _is_action_on_cooldown(self, action):
         """Check if an action is on cooldown and cannot be used"""
         return self.action_cooldown[action] > 0
-    
+
     def _apply_action_effects(self, action):
         """Apply the effects of an action to the current state with data-driven calibration"""
         # Convert current state to dictionary for easier manipulation
@@ -2226,9 +2226,9 @@ class DataDrivenESGEnvironment(gym.Env):
                 adjusted_change = change * diminishing_factor
 
                 # FIXED: More reasonable improvement factor application
-                if metric in ['BESG ESG Score', 'BESG Environmental Pillar Score', 
+                if metric in ['BESG ESG Score', 'BESG Environmental Pillar Score',
                            'BESG Social Pillar Score', 'BESG Governance Pillar Score']:
-                    # Limit the effect of the improvement factor 
+                    # Limit the effect of the improvement factor
                     adjusted_change = adjusted_change * min(1.5, improvement_factor)
 
                 # Store the original value for tracking improvement
@@ -2262,10 +2262,10 @@ class DataDrivenESGEnvironment(gym.Env):
             try:
                 # Get the initiative type with fallback
                 initiative_type = action_info.get('initiative_type', 'no_action')
-                
+
                 # Get financial impact data from analyzer with validation
                 impact = self.analyzer.get_financial_impact(initiative_type, 'immediate')
-                
+
                 # Extensive error checking for impact value
                 if impact is None or np.isnan(impact) or np.isinf(impact):
                     # Use action cost to calculate a default percentage impact
@@ -2273,10 +2273,10 @@ class DataDrivenESGEnvironment(gym.Env):
                     impact = default_pct
                     if self.verbose:
                         print(f"Warning: Invalid financial impact for {initiative_type}, using default {default_pct}")
-                
+
                 if 'Net Income, Adj' in state_dict:
                     net_income = state_dict['Net Income, Adj']
-                    
+
                     # Calculate impact, handling various edge cases
                     if net_income != 0:
                         # Apply the financial impact based on percentage change
@@ -2286,15 +2286,15 @@ class DataDrivenESGEnvironment(gym.Env):
                     else:
                         # If net income is 0, use the action cost as direct impact
                         financial_impact = -adjusted_cost
-                    
+
                     # Apply the impact to the state
                     state_dict['Net Income, Adj'] += financial_impact
-                    
+
                     # Add future effects to track (with validation)
                     try:
                         year1_impact = self.analyzer.get_financial_impact(initiative_type, 'year1')
                         year2_impact = self.analyzer.get_financial_impact(initiative_type, 'year2')
-                        
+
                         # Validate year1 impact
                         if year1_impact is not None and not (np.isnan(year1_impact) or np.isinf(year1_impact)):
                             self.future_financial_effects.append({
@@ -2303,7 +2303,7 @@ class DataDrivenESGEnvironment(gym.Env):
                                 'impact': max(-0.15, min(0.1, year1_impact)),  # Cap between -15% and +10%
                                 'base_value': net_income
                             })
-                        
+
                         # Validate year2 impact
                         if year2_impact is not None and not (np.isnan(year2_impact) or np.isinf(year2_impact)):
                             self.future_financial_effects.append({
@@ -2327,33 +2327,33 @@ class DataDrivenESGEnvironment(gym.Env):
                 financial_impact = -adjusted_cost  # Default to basic cost
                 if 'Net Income, Adj' in state_dict:
                     state_dict['Net Income, Adj'] -= adjusted_cost
-            
+
             # Final validation - ensure financial_impact is a valid number
             if np.isnan(financial_impact) or np.isinf(financial_impact):
                 financial_impact = -adjusted_cost
                 if 'Net Income, Adj' in state_dict:
                     # Fix the state as well
                     state_dict['Net Income, Adj'] = state_dict['Net Income, Adj'] - adjusted_cost + financial_impact
-        
+
         # Apply any future financial effects that are due this year
         current_sim_year = self.current_year + self.current_step
         valid_future_effects = []
-        
+
         for effect in self.future_financial_effects:
             if effect['year'] == current_sim_year:
                 try:
                     if effect['metric'] in state_dict:
                         base_value = effect['base_value']
                         impact = effect['impact']
-                        
+
                         # Validate impact value
                         if np.isnan(impact) or np.isinf(impact):
                             continue
-                            
+
                         if base_value != 0:
                             impact_value = base_value * impact
                             state_dict[effect['metric']] += impact_value
-                            
+
                             # Add to financial_impact for reporting
                             if effect['metric'] == 'Net Income, Adj':
                                 financial_impact += impact_value
@@ -2363,7 +2363,7 @@ class DataDrivenESGEnvironment(gym.Env):
             else:
                 # Keep effects for future years
                 valid_future_effects.append(effect)
-        
+
         # Update the future effects list with only valid future entries
         self.future_financial_effects = valid_future_effects
 
@@ -2414,8 +2414,8 @@ class DataDrivenESGEnvironment(gym.Env):
             soc_weight = 0.292
             gov_weight = 0.237
 
-            weighted_avg = (pillar_scores[0] * env_weight + 
-                            pillar_scores[1] * soc_weight + 
+            weighted_avg = (pillar_scores[0] * env_weight +
+                            pillar_scores[1] * soc_weight +
                             pillar_scores[2] * gov_weight)
 
             # Ensure ESG score doesn't exceed reasonable bounds relative to pillars
@@ -2439,7 +2439,7 @@ class DataDrivenESGEnvironment(gym.Env):
 
         return new_state, adjusted_cost, old_esg_score, new_esg_score, state_dict, financial_impact
 
-    
+
     def _calculate_benchmark_reward(self, new_esg_score, old_esg_score, state_dict=None):
         """Calculate reward based on comparison to industry benchmarks"""
         benchmark_reward = 0
@@ -2458,8 +2458,8 @@ class DataDrivenESGEnvironment(gym.Env):
                 benchmark_reward += 1.0  # Reward for moving to top quartile
 
         # Additional checks for pillar-specific benchmarks
-        for pillar, metric in [('environmental', 'BESG Environmental Pillar Score'), 
-                              ('social', 'BESG Social Pillar Score'), 
+        for pillar, metric in [('environmental', 'BESG Environmental Pillar Score'),
+                              ('social', 'BESG Social Pillar Score'),
                               ('governance', 'BESG Governance Pillar Score')]:
             if metric in self.state_cols:
                 pillar_idx = self.state_cols.index(metric)
@@ -2487,7 +2487,7 @@ class DataDrivenESGEnvironment(gym.Env):
                         benchmark_reward += 0.5  # Reward for moving to top quartile
 
         return benchmark_reward
-    
+
     def step(self, action):
         """
         Execute one step in the environment with data-driven rewards
@@ -2759,40 +2759,40 @@ class DataDrivenESGEnvironment(gym.Env):
         }
 
         return self.current_state, reward, done, info
-    
-    
+
+
     def render(self, mode='human'):
         """Render the environment with data-driven insights"""
         if mode == 'human':
             # Print current state information
             print(f"Step: {self.current_step}, Company: {self.company}, Year: {self.current_year + self.current_step}")
-            
+
             # Display key metrics
             for i, col in enumerate(self.state_cols):
-                if col in ['BESG ESG Score', 'BESG Environmental Pillar Score', 'BESG Social Pillar Score', 
-                         'BESG Governance Pillar Score', 'Revenue, Adj', 'Net Income, Adj', 
+                if col in ['BESG ESG Score', 'BESG Environmental Pillar Score', 'BESG Social Pillar Score',
+                         'BESG Governance Pillar Score', 'Revenue, Adj', 'Net Income, Adj',
                          'Market Cap ($M)', 'Renewable Energy Use']:
                     print(f"{col}: {self.current_state[i]:.2f}")
-            
+
             # Display pillar balance
             env_idx = self.state_cols.index('BESG Environmental Pillar Score') if 'BESG Environmental Pillar Score' in self.state_cols else None
             soc_idx = self.state_cols.index('BESG Social Pillar Score') if 'BESG Social Pillar Score' in self.state_cols else None
             gov_idx = self.state_cols.index('BESG Governance Pillar Score') if 'BESG Governance Pillar Score' in self.state_cols else None
-            
+
             if None not in [env_idx, soc_idx, gov_idx]:
                 env_score = self.current_state[env_idx]
                 soc_score = self.current_state[soc_idx]
                 gov_score = self.current_state[gov_idx]
-                
+
                 imbalance = self._calculate_pillar_imbalance({
                     'BESG Environmental Pillar Score': env_score,
                     'BESG Social Pillar Score': soc_score,
                     'BESG Governance Pillar Score': gov_score
                 })
-                
+
                 print(f"Pillar Balance - Env: {env_score:.2f}, Social: {soc_score:.2f}, Gov: {gov_score:.2f}")
                 print(f"Pillar Imbalance Score: {imbalance:.2f}")
-                
+
                 # Show benchmark comparisons
                 esg_idx = self.state_cols.index('BESG ESG Score') if 'BESG ESG Score' in self.state_cols else None
                 if esg_idx is not None:
@@ -2800,48 +2800,48 @@ class DataDrivenESGEnvironment(gym.Env):
                     benchmark = self._compare_to_benchmark('BESG ESG Score', esg_score)
                     if benchmark:
                         print(f"ESG Score Benchmark: {benchmark.replace('_', ' ').upper()}")
-                
+
                 # Show actions on cooldown
                 cooldown_actions = [i for i, count in self.action_cooldown.items() if count > 0]
                 if cooldown_actions:
                     print("Actions on cooldown:", ", ".join([f"{i} ({self.actions[i]['name']}): {self.action_cooldown[i]} steps" for i in cooldown_actions]))
-                
+
                 # NEW: Show data-driven strategy recommendation
                 balance_rec = self.analyzer.get_pillar_balance_recommendation()['recommendation']
                 print(f"Data recommends {balance_rec.upper()} improvement strategy")
-    
+
     def get_available_actions(self):
         """Get list of available actions with descriptions"""
-        return [(i, action['name'], action.get('cost', 0), action.get('pillar', '')) 
+        return [(i, action['name'], action.get('cost', 0), action.get('pillar', ''))
                 for i, action in self.actions.items()]
-    
+
     def get_valid_actions(self):
         """Get list of valid actions (not on cooldown)"""
         return [i for i, cooldown in self.action_cooldown.items() if cooldown == 0]
-    
+
     def get_company_insights(self):
         """Get data-driven insights about the company"""
         return self.company_insights
-    
+
     def get_similar_companies(self):
         """Get similar companies to the current one"""
         return self.similar_companies
-    
+
     def get_effective_actions(self):
         """Get historically effective actions based on data analysis"""
         effective = {}
         for pillar in ['environmental', 'social', 'governance']:
             effective[pillar] = self.analyzer.get_effective_actions_for_pillar(pillar)
         return effective
-    
+
     def get_improvement_factors(self):
         """Get data-driven improvement factors at different ESG score levels"""
         return self.analyzer.improvement_factors
-    
+
     def get_financial_impacts(self):
         """Get data-driven financial impacts of different initiative types"""
         return self.analyzer.financial_impacts
-    
+
     def get_pillar_balance_recommendation(self):
         """Get data-driven recommendation for pillar balance approach"""
         return self.analyzer.pillar_balance_analysis
@@ -2850,7 +2850,7 @@ class DataDrivenESGEnvironment(gym.Env):
 # Enhanced Prioritized Experience Replay
 class EnhancedPrioritizedReplayBuffer:
     """Enhanced Prioritized Experience Replay with fixed-size numpy arrays for stability"""
-    
+
     def __init__(self, action_size, buffer_size, batch_size, seed, alpha=0.6, beta_start=0.4, beta_frames=100000):
         """Initialize an EnhancedPrioritizedReplayBuffer object."""
         self.action_size = action_size
@@ -2858,31 +2858,31 @@ class EnhancedPrioritizedReplayBuffer:
         self.buffer_size = buffer_size
         self.experience = namedtuple("Experience", field_names=["state", "action", "reward", "next_state", "done"])
         self.seed = random.seed(seed)
-        
+
         # Use numpy arrays for better memory management and stability
         self.priorities = np.ones(buffer_size, dtype=np.float32)
         self.memory = []
-        
+
         self.pos = 0  # Position to add new experiences
         self.size = 0  # Current size of memory
-        
+
         # Prioritization parameters
         self.alpha = alpha  # How much prioritization to use (0 = none, 1 = full)
         self.beta = beta_start  # Importance sampling correction
         self.beta_frames = beta_frames  # Frames over which to anneal beta
         self.frame = 1
         self.max_priority = 1.0  # Initial max priority
-        
+
     def add(self, state, action, reward, next_state, done, error=None):
         """Add a new experience to memory with priority."""
         e = self.experience(state, action, reward, next_state, done)
-        
+
         # Add experience to memory
         if len(self.memory) < self.buffer_size:
             self.memory.append(e)
         else:
             self.memory[self.pos] = e
-        
+
         # Set priority
         if error is not None:
             # Handle potential NaN error
@@ -2892,33 +2892,33 @@ class EnhancedPrioritizedReplayBuffer:
                 priority = (float(abs(error)) + 1e-5) ** self.alpha
         else:
             priority = self.max_priority  # Set to max observed priority if no error provided
-        
+
         # Ensure valid priority
         if np.isnan(priority) or priority <= 0:
             priority = self.max_priority
-            
+
         self.priorities[self.pos] = priority
-        
+
         # Update position and size
         self.pos = (self.pos + 1) % self.buffer_size
         self.size = min(self.size + 1, self.buffer_size)
-    
+
     def sample(self):
         """Sample a batch of experiences using prioritization."""
         if self.size == 0:
             return None
-        
+
         # Update beta for importance sampling
         self.beta = min(1.0, self.beta + self.frame * (1.0 - self.beta) / self.beta_frames)
         self.frame += 1
-        
+
         # Get valid priorities (only for filled memory slots)
         valid_priorities = self.priorities[:self.size]
-        
+
         # Handle potential NaN values or zeros in priorities
         valid_priorities = np.nan_to_num(valid_priorities, nan=self.max_priority)
         valid_priorities = np.maximum(valid_priorities, 1e-8)  # Ensure no zeros
-        
+
         # Calculate sampling probabilities
         priority_sum = valid_priorities.sum()
         if priority_sum > 0:
@@ -2926,26 +2926,26 @@ class EnhancedPrioritizedReplayBuffer:
         else:
             # If all priorities are 0, use uniform distribution
             probs = np.ones_like(valid_priorities) / self.size
-        
+
         # Ensure probabilities sum to 1 (prevent numerical errors)
         probs = probs / np.sum(probs)
-        
+
         # Sample indices based on priorities
         indices = np.random.choice(self.size, size=min(self.size, self.batch_size), p=probs, replace=False)
-        
+
         # Calculate importance-sampling weights (with safety checks)
         weights = np.power(self.size * probs[indices], -self.beta)
         # Handle potential infinities or NaNs
         weights = np.nan_to_num(weights, nan=1.0, posinf=1.0, neginf=1.0)
-        
+
         if np.max(weights) > 0:
             weights = weights / np.max(weights)  # Normalize weights
         else:
             weights = np.ones_like(weights)
-        
+
         # Get selected experiences
         experiences = [self.memory[i] for i in indices]
-        
+
         # Convert to tensor format for neural network
         states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
         actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).long().to(device)
@@ -2953,9 +2953,9 @@ class EnhancedPrioritizedReplayBuffer:
         next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
         dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(device)
         weights = torch.from_numpy(weights.astype(np.float32)).unsqueeze(1).to(device)
-        
+
         return (states, actions, rewards, next_states, dones, weights, indices)
-    
+
     def update_priorities(self, indices, errors):
         """Update priorities for sampled transitions."""
         for i, error in zip(indices, errors):
@@ -2965,11 +2965,11 @@ class EnhancedPrioritizedReplayBuffer:
                     priority = self.max_priority
                 else:
                     priority = (float(abs(error)) + 1e-5) ** self.alpha
-                    
+
                 # Ensure priority is valid
                 if np.isnan(priority) or priority <= 0:
                     priority = self.max_priority
-                    
+
                 self.priorities[i] = priority
                 self.max_priority = max(self.max_priority, priority)
 
@@ -2981,43 +2981,43 @@ class EnhancedPrioritizedReplayBuffer:
 # Enhanced Dueling DQN Architecture with Noisy Networks for better exploration
 class NoisyLinear(nn.Module):
     """Noisy Linear Layer for exploration"""
-    
+
     def __init__(self, in_features, out_features, std_init=0.4):
         super(NoisyLinear, self).__init__()
-        
+
         self.in_features = in_features
         self.out_features = out_features
         self.std_init = std_init
-        
+
         self.weight_mu = nn.Parameter(torch.FloatTensor(out_features, in_features))
         self.weight_sigma = nn.Parameter(torch.FloatTensor(out_features, in_features))
         self.register_buffer('weight_epsilon', torch.FloatTensor(out_features, in_features))
-        
+
         self.bias_mu = nn.Parameter(torch.FloatTensor(out_features))
         self.bias_sigma = nn.Parameter(torch.FloatTensor(out_features))
         self.register_buffer('bias_epsilon', torch.FloatTensor(out_features))
-        
+
         self.reset_parameters()
         self.reset_noise()
-    
+
     def reset_parameters(self):
         mu_range = 1 / np.sqrt(self.in_features)
         self.weight_mu.data.uniform_(-mu_range, mu_range)
         self.weight_sigma.data.fill_(self.std_init / np.sqrt(self.in_features))
         self.bias_mu.data.uniform_(-mu_range, mu_range)
         self.bias_sigma.data.fill_(self.std_init / np.sqrt(self.out_features))
-    
+
     def reset_noise(self):
         epsilon_in = self._scale_noise(self.in_features)
         epsilon_out = self._scale_noise(self.out_features)
-        
+
         self.weight_epsilon.copy_(torch.outer(epsilon_out, epsilon_in))
         self.bias_epsilon.copy_(epsilon_out)
-    
+
     def _scale_noise(self, size):
         x = torch.randn(size, device=self.weight_mu.device)
         return x.sign().mul_(x.abs().sqrt_())
-    
+
     def forward(self, x):
         if self.training:
             weight = self.weight_mu + self.weight_sigma * self.weight_epsilon
@@ -3025,41 +3025,41 @@ class NoisyLinear(nn.Module):
         else:
             weight = self.weight_mu
             bias = self.bias_mu
-        
+
         return F.linear(x, weight, bias)
 
 
 class DataDrivenDuelingDQN(nn.Module):
     """Enhanced Dueling DQN with data-driven architecture for better ESG modeling"""
-    
+
     def __init__(self, state_size, action_size, seed=42, fc1_units=256, fc2_units=256):
         super(DataDrivenDuelingDQN, self).__init__()
         self.seed = torch.manual_seed(seed)
-        
+
         # FIXED: Use smaller initial layer sizes for better stability
         # Feature extraction layers - shared for all metrics
         self.fc1 = nn.Linear(state_size, fc1_units)
         self.bn1 = nn.BatchNorm1d(fc1_units)  # Batch normalization for stability
         self.fc2 = nn.Linear(fc1_units, fc2_units)
         self.bn2 = nn.BatchNorm1d(fc2_units)
-        
+
         # FIXED: Initialize weights with smaller values for stability
         self._initialize_weights()
-        
+
         # FIXED: Use standard linear layers instead of NoisyLinear for initial stabilization
         # Later we can reintroduce NoisyLinear when the network is stable
         # Advantage stream with domain-specific layers
         self.advantage_hidden = nn.Linear(fc2_units, 128)
         self.advantage = nn.Linear(128, action_size)
-        
+
         # Value stream with domain-specific layers
         self.value_hidden = nn.Linear(fc2_units, 128)
         self.value = nn.Linear(128, 1)
-        
+
         # Dropout for regularization - helps prevent overfitting
         # FIXED: Increase dropout to prevent overfitting
         self.dropout = nn.Dropout(0.3)
-    
+
     def _initialize_weights(self):
         """Initialize weights with smaller values for stability"""
         for m in self.modules():
@@ -3069,7 +3069,7 @@ class DataDrivenDuelingDQN(nn.Module):
                 # FIXED: Use small constant bias initialization
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0.01)
-    
+
     def forward(self, state):
         """Forward pass with dueling architecture for better value estimation"""
         # FIXED: Add gradient clipping at runtime to prevent exploding gradients
@@ -3077,51 +3077,51 @@ class DataDrivenDuelingDQN(nn.Module):
             if torch.isnan(state).any() or torch.isinf(state).any():
                 # Replace problematic values
                 state = torch.nan_to_num(state, nan=0.0, posinf=1.0, neginf=-1.0)
-        
+
         # Feature extraction
         x = F.relu(self.fc1(state))
         if x.size(0) > 1:  # Only apply batch norm if batch size > 1
             x = self.bn1(x)
         x = self.dropout(x)
-        
+
         x = F.relu(self.fc2(x))
         if x.size(0) > 1:
             x = self.bn2(x)
         x = self.dropout(x)
-        
+
         # FIXED: Add gradient checks between layers
         with torch.no_grad():
             if torch.isnan(x).any() or torch.isinf(x).any():
                 # If we still have NaNs after main layers, replace them
                 x = torch.nan_to_num(x, nan=0.0, posinf=1.0, neginf=-1.0)
-        
+
         # Value stream
         val_hidden = F.relu(self.value_hidden(x))
         val = self.value(val_hidden)
-        
+
         # Advantage stream
         adv_hidden = F.relu(self.advantage_hidden(x))
         adv = self.advantage(adv_hidden)
-        
+
         # FIXED: Add more checks before final calculation
         with torch.no_grad():
             if torch.isnan(val).any() or torch.isinf(val).any():
                 val = torch.nan_to_num(val, nan=0.0, posinf=1.0, neginf=-1.0)
             if torch.isnan(adv).any() or torch.isinf(adv).any():
                 adv = torch.nan_to_num(adv, nan=0.0, posinf=1.0, neginf=-1.0)
-        
+
         # Combine value and advantage using dueling technique
         # Q(s,a) = V(s) + (A(s,a) - 1/|A| * sum(A(s,a')))
         avg_adv = adv.mean(dim=1, keepdim=True)
         q_values = val + adv - avg_adv
-        
+
         # FIXED: Final safety check
         with torch.no_grad():
             if torch.isnan(q_values).any() or torch.isinf(q_values).any():
                 q_values = torch.nan_to_num(q_values, nan=0.0, posinf=1.0, neginf=-1.0)
-        
+
         return q_values
-    
+
     def reset_noise(self):
         """Dummy method to maintain compatibility with previous code."""
         pass
@@ -3148,7 +3148,7 @@ class DataDrivenDQNAgent:
 
         # Enhanced Prioritized Replay memory
         self.memory = EnhancedPrioritizedReplayBuffer(
-            action_size, buffer_size=100000, batch_size=64, seed=seed, 
+            action_size, buffer_size=100000, batch_size=64, seed=seed,
             alpha=0.6, beta_start=0.4, beta_frames=100000
         )
 
@@ -3170,12 +3170,12 @@ class DataDrivenDQNAgent:
         # FIXED: More aggressive epsilon decay for better exploration
         self.eps_end = 0.02   # Changed from 0.01
         self.eps_decay = 0.99  # Changed from 0.995
-        
+
     def step(self, state, action, reward, next_state, done):
         try:
             # Store experience in n-step buffer for multi-step learning
             self.n_step_buffer.append((state, action, reward, next_state, done))
-            
+
             # Only add to replay buffer if we have enough steps
             if len(self.n_step_buffer) == self.n_step:
                 try:
@@ -3183,41 +3183,41 @@ class DataDrivenDQNAgent:
                     n_step_reward = 0
                     for i in range(self.n_step):
                         n_step_reward += (self.gamma ** i) * self.n_step_buffer[i][2]
-                    
+
                     # Get the initial state and action
                     initial_state = self.n_step_buffer[0][0]
                     initial_action = self.n_step_buffer[0][1]
-                    
+
                     # Get the final next state and done flag
                     final_next_state = self.n_step_buffer[-1][3]
                     final_done = self.n_step_buffer[-1][4]
-                    
+
                     # Guard against invalid states or actions
-                    if (initial_state is None or 
-                        final_next_state is None or 
-                        not isinstance(initial_action, (int, np.integer)) or 
-                        initial_action < 0 or 
+                    if (initial_state is None or
+                        final_next_state is None or
+                        not isinstance(initial_action, (int, np.integer)) or
+                        initial_action < 0 or
                         initial_action >= self.action_size):
                         # Skip this experience
                         self.n_step_buffer.pop(0)
                         return
-                    
+
                     # Compute estimated TD error for prioritization
                     try:
                         with torch.no_grad():
                             state_tensor = torch.from_numpy(initial_state).float().unsqueeze(0).to(device)
                             next_state_tensor = torch.from_numpy(final_next_state).float().unsqueeze(0).to(device)
-                            
+
                             # Get current Q value
                             q_values = self.qnetwork_local(state_tensor).data.cpu().numpy()[0]
-                            
+
                             # Check for NaN values
                             if np.isnan(q_values).any():
                                 # Use default error if we have NaN values
                                 td_error = 1.0
                             else:
                                 q_current = q_values[initial_action]
-                                
+
                                 # Get next Q value using target network (Double DQN if enabled)
                                 if self.use_double_dqn:
                                     # Double DQN: use local network to select action, target network to evaluate
@@ -3226,7 +3226,7 @@ class DataDrivenDQNAgent:
                                         next_action = 0  # Use default action if NaN
                                     else:
                                         next_action = np.argmax(next_q_values)
-                                        
+
                                     target_q_values = self.qnetwork_target(next_state_tensor).data.cpu().numpy()[0]
                                     if np.isnan(target_q_values).any():
                                         q_next = 0  # Use default value if NaN
@@ -3239,29 +3239,29 @@ class DataDrivenDQNAgent:
                                         q_next = 0  # Use default value if NaN
                                     else:
                                         q_next = np.max(target_q_values)
-                                
+
                                 # Calculate target Q value with n-step return
                                 target = n_step_reward + (self.gamma ** self.n_step) * q_next * (1 - final_done)
-                                
+
                                 # TD error for prioritization
                                 td_error = abs(target - q_current)
-                                
+
                                 # Handle NaN TD error
                                 if np.isnan(td_error):
                                     td_error = 1.0  # Default priority
                     except Exception as e:
                         print(f"Error calculating TD error: {e}")
                         td_error = 1.0  # Default priority
-                    
+
                     # Add to replay buffer with TD error for prioritization
                     self.memory.add(initial_state, initial_action, n_step_reward, final_next_state, final_done, td_error)
-                
+
                 except Exception as e:
                     print(f"Error processing n-step experience: {e}")
                     # Remove oldest experience and continue
                     if len(self.n_step_buffer) > 0:
                         self.n_step_buffer.pop(0)
-            
+
             # Learn every UPDATE_EVERY time steps
             self.t_step = (self.t_step + 1) % self.update_every
             if self.t_step == 0:
@@ -3273,13 +3273,13 @@ class DataDrivenDQNAgent:
                             self.learn(experiences, self.gamma)
                     except Exception as e:
                         print(f"Error during learning: {e}")
-        
+
         except Exception as e:
             print(f"Error in step function: {e}")
-                
+
     def act(self, state, eps=None, env=None):
         """Returns actions for given state using current policy with exploration.
-        
+
         Args:
             state: Current state
             eps: Epsilon for exploration
@@ -3287,16 +3287,16 @@ class DataDrivenDQNAgent:
         """
         if eps is None:
             eps = self.eps
-            
+
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         self.qnetwork_local.eval()
         with torch.no_grad():
             action_values = self.qnetwork_local(state)
         self.qnetwork_local.train()
-        
+
         # Reset noise for next forward pass
         self.qnetwork_local.reset_noise()
-        
+
         # Get valid actions if environment is provided
         valid_actions = list(range(self.action_size))
         if env is not None:
@@ -3309,13 +3309,13 @@ class DataDrivenDQNAgent:
                 weakest_pillar = env._identify_weakest_pillar(state_dict)
 
                 # Filter for actions targeting weakest pillar
-                weakest_pillar_actions = [a for a in valid_actions if a != 0 and 
+                weakest_pillar_actions = [a for a in valid_actions if a != 0 and
                                          env.actions[a].get('pillar', '') == weakest_pillar]
 
                 if weakest_pillar_actions:
                     # 40% chance to focus on weakest pillar
                     valid_actions = weakest_pillar_actions
-        
+
         # Epsilon-greedy action selection (used alongside noisy networks)
         if random.random() > eps:
             # Choose best valid action
@@ -3330,7 +3330,7 @@ class DataDrivenDQNAgent:
         else:
             # Random selection from valid actions
             return random.choice(valid_actions)
-        
+
     def learn(self, experiences, gamma):
         """Update value parameters using batch of experience tuples."""
         states, actions, rewards, next_states, dones, weights, indices = experiences
@@ -3404,7 +3404,7 @@ class DataDrivenDQNAgent:
             print(f"Error in learn function: {e}")
             # Continue with epsilon decay even if learning fails
             self.eps = max(self.eps_end, self.eps_decay * self.eps)
-        
+
     def soft_update(self, local_model, target_model, tau):
         """Soft update target network parameters."""
         for target_param, local_param in zip(target_model.parameters(), local_model.parameters()):
@@ -3418,7 +3418,7 @@ class DataDrivenDQNAgent:
             'scheduler_state_dict': self.scheduler.state_dict(),
             'epsilon': self.eps
         }, filepath)
-    
+
     def load(self, filepath):
         """Load a saved model."""
         if device.type == 'cuda':
@@ -3426,7 +3426,7 @@ class DataDrivenDQNAgent:
         else:
             # Load to CPU if CUDA is not available
             checkpoint = torch.load(filepath, map_location=torch.device('cpu'))
-            
+
         self.qnetwork_local.load_state_dict(checkpoint['model_state_dict'])
         self.qnetwork_target.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
@@ -3441,91 +3441,91 @@ def data_driven_training(env, n_episodes=500, early_stop_threshold=None, checkpo
     # Create checkpoint directory if it doesn't exist
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
-    
+
     # Initialize agent with state size from environment
     state_size = len(env.reset())
     action_size = env.action_space.n
     agent = DataDrivenDQNAgent(state_size=state_size, action_size=action_size)
-    
+
     # Track scores and performance metrics
     scores = []
     recent_scores = deque(maxlen=100)
     best_avg_score = -np.inf
-    
+
     # Track pillar improvements for analysis
     env_improvements = []
     social_improvements = []
     gov_improvements = []
-    
+
     # Curriculum learning stages - dynamically adjusted based on company data
     if curriculum_learning:
         # Get data-driven recommendation for balance vs. focus approach
         balance_rec = env.get_pillar_balance_recommendation()
         balance_weight = balance_rec['optimal_weight']
-        
+
         # Design curriculum based on company's current ESG score
         # to better target appropriate improvement level
         initial_esg = env.initial_values.get('BESG ESG Score', 0) if hasattr(env, 'initial_values') else 0
-        
+
         # FIXED: More moderate curriculum progression
         curriculum_stages = [
             {'max_steps': 3, 'episodes': 100, 'diversity_weight': 2.0, 'balance_weight': balance_weight, 'cooldown': 1},  # Intro
             {'max_steps': 5, 'episodes': 150, 'diversity_weight': 2.5, 'balance_weight': balance_weight, 'cooldown': 2},  # Intermediate
             {'max_steps': 8, 'episodes': 250, 'diversity_weight': 3.0, 'balance_weight': balance_weight, 'cooldown': 3}   # Advanced
         ]
-        
+
         current_stage = 0
         episode_counter = 0
         total_episodes = 0
-        
+
         # Set initial curriculum parameters
         env.max_steps = curriculum_stages[current_stage]['max_steps']
         env.diversity_weight = curriculum_stages[current_stage]['diversity_weight']
         env.balance_weight = curriculum_stages[current_stage]['balance_weight']
         env.cooldown_duration = curriculum_stages[current_stage]['cooldown']
-    
+
     # Create evaluation environment
     eval_env = copy.deepcopy(env)
-    
+
     # FIXED: Enable verbose mode during evaluation
     eval_env.verbose = True
-    
+
     # Main training loop
     for i_episode in range(1, n_episodes+1):
         state = env.reset()
         score = 0
         pillar_improvements = {'environmental': 0, 'social': 0, 'governance': 0}
-        
+
         # Episode loop
         done = False
         while not done:
             # Use environment-aware action selection
             action = agent.act(state, env=env)
             next_state, reward, done, info = env.step(action)
-            
+
             # FIXED: Add debug output for checking reward calculation
             if i_episode == 1 and env.current_step < 3:
                 print(f"Step {env.current_step}: Action={env.actions[action]['name']}, Reward={reward:.2f}")
                 if 'esg_improvement' in info:
                     print(f"  ESG Improvement: {info['esg_improvement']:.4f}")
-            
+
             agent.step(state, action, reward, next_state, done)
-            
+
             # Track improvements for analysis
             for pillar in ['environmental', 'social', 'governance']:
                 if pillar in info['pillar_improvements']:
                     pillar_improvements[pillar] = info['pillar_improvements'][pillar]
-            
+
             state = next_state
             score += reward
-                
+
         # Store score and pillar improvements
         scores.append(score)
         recent_scores.append(score)
         env_improvements.append(pillar_improvements['environmental'])
         social_improvements.append(pillar_improvements['social'])
         gov_improvements.append(pillar_improvements['governance'])
-        
+
         # Print progress
         if i_episode % 10 == 0:
             avg_score = np.mean(recent_scores) if recent_scores else 0
@@ -3533,7 +3533,7 @@ def data_driven_training(env, n_episodes=500, early_stop_threshold=None, checkpo
             print(f'Pillar Improvements - Env: {np.mean(env_improvements[-10:]):.3f}, '
                   f'Social: {np.mean(social_improvements[-10:]):.3f}, '
                   f'Gov: {np.mean(gov_improvements[-10:]):.3f}')
-        
+
         # Evaluate agent periodically
         if i_episode % evaluate_every == 0:
             print("\nStarting evaluation...")
@@ -3541,51 +3541,51 @@ def data_driven_training(env, n_episodes=500, early_stop_threshold=None, checkpo
             print(f'Evaluation at episode {i_episode}: Avg Score: {eval_score:.2f}')
             print(f'Eval Pillar Balance - Env: {eval_pillars["env"]:.3f}, '
                   f'Social: {eval_pillars["social"]:.3f}, Gov: {eval_pillars["gov"]:.3f}')
-            
+
             # Save if this is the best model so far based on evaluation
             if eval_score > best_avg_score:
                 best_avg_score = eval_score
                 agent.save(f'{checkpoint_dir}/best_model.pth')
                 print(f'New best model saved with eval score: {best_avg_score:.2f}')
-        
+
         # Curriculum learning stage progression
         if curriculum_learning:
             episode_counter += 1
             total_episodes += 1
-            
+
             if current_stage < len(curriculum_stages) - 1 and episode_counter >= curriculum_stages[current_stage]['episodes']:
                 current_stage += 1
                 episode_counter = 0
-                
+
                 # Update environment parameters
                 env.max_steps = curriculum_stages[current_stage]['max_steps']
                 env.diversity_weight = curriculum_stages[current_stage]['diversity_weight']
                 env.balance_weight = curriculum_stages[current_stage]['balance_weight']
                 env.cooldown_duration = curriculum_stages[current_stage]['cooldown']
-                
+
                 # Also update eval environment
                 eval_env.max_steps = curriculum_stages[current_stage]['max_steps']
                 eval_env.diversity_weight = curriculum_stages[current_stage]['diversity_weight']
                 eval_env.balance_weight = curriculum_stages[current_stage]['balance_weight']
                 eval_env.cooldown_duration = curriculum_stages[current_stage]['cooldown']
-                
+
                 print(f"\nAdvancing to curriculum stage {current_stage+1}: "
                      f"max_steps = {env.max_steps}, "
                      f"diversity_weight = {env.diversity_weight}, "
                      f"balance_weight = {env.balance_weight}, "
                      f"cooldown = {env.cooldown_duration}")
-        
+
         # Early stopping
         if early_stop_threshold is not None and len(recent_scores) >= 100:
             if np.mean(recent_scores) >= early_stop_threshold:
-                print(f'\nEnvironment solved in {i_episode} episodes! ' 
+                print(f'\nEnvironment solved in {i_episode} episodes! '
                       f'Average Score: {np.mean(recent_scores):.2f}')
                 agent.save(f'{checkpoint_dir}/final_model.pth')
                 break
-    
+
     # Save final model regardless
     agent.save(f'{checkpoint_dir}/final_model.pth')
-    
+
     return scores, agent, (env_improvements, social_improvements, gov_improvements)
 
 
@@ -3595,58 +3595,58 @@ def evaluate_agent(env, agent, num_episodes=3):
     env_scores = []
     social_scores = []
     gov_scores = []
-    
+
     # FIXED: Create a fresh copy of the environment for evaluation
     eval_env = copy.deepcopy(env)
-    
+
     # FIXED: Reset all episode-specific variables to ensure fresh evaluation
     for i in range(num_episodes):
         state = eval_env.reset()
         score = 0
         done = False
         step = 0
-        
+
         # FIXED: Set a max step limit to prevent infinite loops
         max_steps = eval_env.max_steps
-        
+
         while not done and step < max_steps:
             # Act without exploration (epsilon=0) and respect action cooldowns
             action = agent.act(state, eps=0.0, env=eval_env)
             next_state, reward, done, info = eval_env.step(action)
-            
+
             # FIXED: Add detailed logging for debugging
             if i == 0 and step < 3:  # Log first few steps of first episode
                 print(f"Eval Step {step}: Action={eval_env.actions[action]['name']}, Reward={reward:.2f}")
                 if 'esg_improvement' in info:
                     print(f"  ESG Improvement: {info['esg_improvement']:.4f}")
-                
+
             state = next_state
             score += reward
             step += 1
-        
+
         # FIXED: Add more detailed output for final state
         if i == 0:
             print(f"Evaluation episode ended after {step} steps with score {score:.2f}")
-        
+
         total_score += score
-        
+
         # Track final pillar scores
         env_idx = eval_env.state_cols.index('BESG Environmental Pillar Score') if 'BESG Environmental Pillar Score' in eval_env.state_cols else None
         soc_idx = eval_env.state_cols.index('BESG Social Pillar Score') if 'BESG Social Pillar Score' in eval_env.state_cols else None
         gov_idx = eval_env.state_cols.index('BESG Governance Pillar Score') if 'BESG Governance Pillar Score' in eval_env.state_cols else None
-        
+
         if None not in [env_idx, soc_idx, gov_idx]:
             env_scores.append(state[env_idx])
             social_scores.append(state[soc_idx])
             gov_scores.append(state[gov_idx])
-    
+
     avg_score = total_score / num_episodes
     avg_pillars = {
         'env': np.mean(env_scores) if env_scores else 0,
         'social': np.mean(social_scores) if social_scores else 0,
         'gov': np.mean(gov_scores) if gov_scores else 0
     }
-    
+
     return avg_score, avg_pillars
 
 
@@ -3654,34 +3654,34 @@ def evaluate_agent(env, agent, num_episodes=3):
 # Enhanced visualization with data-driven insights
 def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
     """Test the trained agent and visualize the ESG strategy with data-driven insights"""
-    
+
     # Create save directory if it doesn't exist
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    
+
     # Store results for visualization
     results = []
-    
+
     for i in range(num_episodes):
         state = env.reset()
         total_reward = 0
         done = False
         step = 0
         episode_results = {
-            'step': [], 'action': [], 'pillar': [], 'esg_score': [], 
+            'step': [], 'action': [], 'pillar': [], 'esg_score': [],
             'env_score': [], 'social_score': [], 'gov_score': [],
             'net_income': [], 'reward': [], 'pillar_imbalance': [],
             'improvement': [], 'cost': [], 'weakest_pillar': [],
             'benchmark_category': [], 'financial_impact': []
         }
-        
+
         # Record initial state
         env_idx = env.state_cols.index('BESG Environmental Pillar Score') if 'BESG Environmental Pillar Score' in env.state_cols else None
         soc_idx = env.state_cols.index('BESG Social Pillar Score') if 'BESG Social Pillar Score' in env.state_cols else None
         gov_idx = env.state_cols.index('BESG Governance Pillar Score') if 'BESG Governance Pillar Score' in env.state_cols else None
         esg_idx = env.state_cols.index('BESG ESG Score') if 'BESG ESG Score' in env.state_cols else None
         net_income_idx = env.state_cols.index('Net Income, Adj') if 'Net Income, Adj' in env.state_cols else None
-        
+
         # Record initial state
         episode_results['step'].append(0)
         episode_results['action'].append('Initial State')
@@ -3695,26 +3695,26 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         episode_results['improvement'].append(0)
         episode_results['cost'].append(0)
         episode_results['financial_impact'].append(0)
-        
+
         # Calculate initial pillar imbalance
         state_dict = {env.state_cols[i]: state[i] for i in range(len(state))}
         pillar_imbalance = env._calculate_pillar_imbalance(state_dict)
         weakest_pillar = env._identify_weakest_pillar(state_dict)
-        
+
         episode_results['pillar_imbalance'].append(pillar_imbalance)
         episode_results['weakest_pillar'].append(weakest_pillar)
-        
+
         # Get benchmark category if available
         if hasattr(env, '_compare_to_benchmark'):
             benchmark = env._compare_to_benchmark('BESG ESG Score', state[esg_idx] if esg_idx is not None else 0)
             episode_results['benchmark_category'].append(benchmark)
         else:
             episode_results['benchmark_category'].append(None)
-        
+
         print(f"\nTesting Episode {i+1}")
         print("Initial state:")
         env.render()
-        
+
         # NEW: Show data-driven insights
         if hasattr(env, 'get_company_insights'):
             company_insights = env.get_company_insights()
@@ -3722,7 +3722,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
             for insight in company_insights[:5]:  # Show first 5 insights
                 print(f"- {insight}")
             print("...")
-        
+
         # NEW: Show ESG score improvement patterns
         if hasattr(env, 'get_improvement_factors'):
             improvement_factors = env.get_improvement_factors()
@@ -3733,7 +3733,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
                 print(f"- Current ESG score: {state[esg_idx] if esg_idx is not None else 0:.2f}")
                 current_factor = env.analyzer.get_improvement_factor(state[esg_idx] if esg_idx is not None else 0)
                 print(f"- Current improvement potential: {current_factor:.2f}x")
-        
+
         # NEW: Show pillar balance approach recommendation
         if hasattr(env, 'get_pillar_balance_recommendation'):
             balance_rec = env.get_pillar_balance_recommendation()
@@ -3742,12 +3742,12 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
                 print(f"- Focus on improving {weakest_pillar.upper()} pillar first")
             else:
                 print(f"- Balance improvements across all pillars")
-        
+
         while not done:
             # Use environment-aware action selection
             action = agent.act(state, eps=0.0, env=env)
             next_state, reward, done, info = env.step(action)
-            
+
             # Record results
             episode_results['step'].append(step + 1)
             episode_results['action'].append(env.actions[action]['name'])
@@ -3763,50 +3763,50 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
             episode_results['pillar_imbalance'].append(info['pillar_imbalance'])
             episode_results['weakest_pillar'].append(info['weakest_pillar'])
             episode_results['financial_impact'].append(info.get('financial_impact', 0))
-            
+
             # Get benchmark category if available
             if hasattr(env, '_compare_to_benchmark'):
                 benchmark = env._compare_to_benchmark('BESG ESG Score', next_state[esg_idx] if esg_idx is not None else 0)
                 episode_results['benchmark_category'].append(benchmark)
             else:
                 episode_results['benchmark_category'].append(None)
-            
+
             print(f"\nStep {step+1}: Action = {env.actions[action]['name']} (Pillar: {env.actions[action].get('pillar', 'None')})")
             print(f"Reward = {reward:.2f}, ESG Score Change: {info['esg_improvement']:.2f}")
             if 'financial_impact' in info and info['financial_impact'] != 0:
                 print(f"Financial Impact: {info['financial_impact']:.2f}")
             env.render()
-            
+
             state = next_state
             total_reward += reward
             step += 1
-        
+
         results.append(episode_results)
         print(f"\nEpisode {i+1} - Total Reward: {total_reward:.2f}")
         print(f"Final ESG Score: {state[esg_idx] if esg_idx is not None else 0:.2f} "
               f"(Started at {env.initial_state[esg_idx] if esg_idx is not None else 0:.2f})")
-        
+
         # Calculate final pillar balance
         env_final = state[env_idx] if env_idx is not None else 0
         soc_final = state[soc_idx] if soc_idx is not None else 0
         gov_final = state[gov_idx] if gov_idx is not None else 0
-        
+
         print(f"Final Pillar Scores - Env: {env_final:.2f}, Social: {soc_final:.2f}, Gov: {gov_final:.2f}")
         print(f"Final Pillar Imbalance: {episode_results['pillar_imbalance'][-1]:.3f}")
-        
+
         # Show final benchmark position if available
         if episode_results['benchmark_category'][-1]:
             benchmark = episode_results['benchmark_category'][-1].replace('_', ' ').upper()
             print(f"Industry Position: {benchmark}")
-    
+
     # Create enhanced visualizations
     for i, episode_results in enumerate(results):
         # Create a DataFrame for easier plotting
         results_df = pd.DataFrame(episode_results)
-        
+
         # Enhanced visualization with 6 subplots
         plt.figure(figsize=(18, 12))
-        
+
         # 1. Overall ESG Score Progression
         plt.subplot(2, 3, 1)
         plt.plot(results_df['step'], results_df['esg_score'], marker='o', linestyle='-', linewidth=2)
@@ -3814,7 +3814,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.xlabel('Step', fontsize=12)
         plt.ylabel('ESG Score', fontsize=12)
         plt.grid(True, alpha=0.3)
-        
+
         # 2. ESG Pillar Scores
         plt.subplot(2, 3, 2)
         plt.plot(results_df['step'], results_df['env_score'], marker='o', color='green', label='Environmental')
@@ -3825,7 +3825,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.ylabel('Pillar Score', fontsize=12)
         plt.legend(fontsize=10)
         plt.grid(True, alpha=0.3)
-        
+
         # 3. Financial Impact (Net Income)
         plt.subplot(2, 3, 3)
         plt.plot(results_df['step'], results_df['net_income'], marker='o', color='red')
@@ -3833,7 +3833,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.xlabel('Step', fontsize=12)
         plt.ylabel('Net Income', fontsize=12)
         plt.grid(True, alpha=0.3)
-        
+
         # 4. Rewards per Action
         plt.subplot(2, 3, 4)
         plt.plot(results_df['step'], results_df['reward'], marker='o', color='orange')
@@ -3841,7 +3841,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.xlabel('Step', fontsize=12)
         plt.ylabel('Reward', fontsize=12)
         plt.grid(True, alpha=0.3)
-        
+
         # 5. Pillar Imbalance Over Time
         plt.subplot(2, 3, 5)
         plt.plot(results_df['step'], results_df['pillar_imbalance'], marker='o', color='brown')
@@ -3849,7 +3849,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.xlabel('Step', fontsize=12)
         plt.ylabel('Imbalance Score', fontsize=12)
         plt.grid(True, alpha=0.3)
-        
+
         # 6. Action Distribution by Pillar
         plt.subplot(2, 3, 6)
         pillar_counts = results_df['pillar'].value_counts()
@@ -3862,14 +3862,14 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.xlabel('Pillar', fontsize=12)
         plt.ylabel('Number of Actions', fontsize=12)
         plt.xticks(rotation=45)
-        
+
         plt.tight_layout()
         plt.savefig(f'{save_dir}/episode_{i+1}_results.png')
         plt.show()
-        
+
         # Create additional plot for action effects
         plt.figure(figsize=(12, 10))
-        
+
         # ESG improvement per action
         plt.subplot(2, 2, 1)
         action_df = results_df[1:].copy()  # Skip initial state
@@ -3878,7 +3878,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.xlabel('Action', fontsize=12)
         plt.ylabel('ESG Score Improvement', fontsize=12)
         plt.xticks(rotation=90)
-        
+
         # Financial impact comparison (NEW)
         plt.subplot(2, 2, 2)
         plt.bar(action_df['action'], action_df['financial_impact'], color='red')
@@ -3886,7 +3886,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.xlabel('Action', fontsize=12)
         plt.ylabel('Financial Impact', fontsize=12)
         plt.xticks(rotation=90)
-        
+
         # Efficiency (improvement/cost) with financial adjustment (NEW)
         plt.subplot(2, 2, 3)
         # Adjust for positive financial impacts
@@ -3899,7 +3899,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         plt.xlabel('Action', fontsize=12)
         plt.ylabel('Efficiency', fontsize=12)
         plt.xticks(rotation=90)
-        
+
         # Weakest pillar over time
         plt.subplot(2, 2, 4)
         weakest_counts = pd.Series(results_df['weakest_pillar']).value_counts()
@@ -3907,18 +3907,18 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
         weakest_colors = [colors.get(p, 'gray') for p in weakest_counts.index]
         plt.pie(weakest_counts, labels=weakest_counts.index, autopct='%1.1f%%', colors=weakest_colors)
         plt.title('Distribution of Weakest Pillar', fontsize=14)
-        
+
         plt.tight_layout()
         plt.savefig(f'{save_dir}/episode_{i+1}_action_analysis.png')
         plt.show()
-        
+
         # Create a table showing actions taken
         action_table = results_df.copy()
         action_table = action_table.rename(columns={
-            'step': 'Step', 
-            'action': 'Action', 
-            'pillar': 'Pillar', 
-            'esg_score': 'ESG Score', 
+            'step': 'Step',
+            'action': 'Action',
+            'pillar': 'Pillar',
+            'esg_score': 'ESG Score',
             'env_score': 'Env Score',
             'social_score': 'Social Score',
             'gov_score': 'Gov Score',
@@ -3928,14 +3928,14 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
             'financial_impact': 'Financial Impact',
             'benchmark_category': 'Industry Position'
         })
-        
+
         # Print the action table
         print("\nActions Taken:")
         print(action_table[['Step', 'Action', 'Pillar', 'ESG Score', 'Env Score', 'Social Score', 'Gov Score', 'Reward', 'Financial Impact']])
-        
+
         # Generate enhanced strategic insights with data-driven recommendations
         print("\n=== DATA-DRIVEN ESG STRATEGY INSIGHTS ===")
-        
+
         # 1. Analyze the most effective actions
         if len(action_df) > 0:
             # Include financial impacts in efficiency calculation
@@ -3943,7 +3943,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
             action_df['adjusted_cost'] = action_df['adjusted_cost'].replace(0, 1)  # Avoid division by zero
             action_df['efficiency'] = action_df['improvement'] / action_df['adjusted_cost']
             top_actions = action_df.sort_values('efficiency', ascending=False).head(3)
-            
+
             print("\nMost Effective Actions:")
             for _, row in top_actions.iterrows():
                 print(f"- {row['action']} (Pillar: {row['pillar']})")
@@ -3951,16 +3951,16 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
                 print(f"  • Cost: {row['cost']:.2f}")
                 print(f"  • Financial Impact: {row['financial_impact']:.2f}")
                 print(f"  • Efficiency: {row['efficiency']:.4f}")
-        
+
         # 2. Analyze pillar balance impact with data-driven recommendation
         initial_imbalance = results_df['pillar_imbalance'].iloc[0]
         final_imbalance = results_df['pillar_imbalance'].iloc[-1]
-        
+
         # Get pillar balance recommendation
         if hasattr(env, 'get_pillar_balance_recommendation'):
             balance_rec = env.get_pillar_balance_recommendation()
             balance_approach = balance_rec['recommendation']
-            
+
             if balance_approach == 'balanced':
                 if final_imbalance < initial_imbalance:
                     print(f"\nPillar Balance: IMPROVED from {initial_imbalance:.3f} to {final_imbalance:.3f} (aligned with data recommendation)")
@@ -3979,30 +3979,30 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
                 print(f"\nPillar Balance: WORSENED from {initial_imbalance:.3f} to {final_imbalance:.3f}")
             else:
                 print(f"\nPillar Balance: UNCHANGED at {final_imbalance:.3f}")
-        
+
         # 3. Analyze financial impact
         initial_income = results_df['net_income'].iloc[0]
         final_income = results_df['net_income'].iloc[-1]
         income_change = final_income - initial_income
-        
+
         if income_change < 0:
             print(f"Financial Impact: Cost of {abs(income_change):.2f} (ROI: {(results_df['esg_score'].iloc[-1] - results_df['esg_score'].iloc[0]) / abs(income_change):.4f} ESG points per unit)")
         else:
             print(f"Financial Impact: POSITIVE change of {income_change:.2f}")
-        
+
         # 4. Benchmark progress
         if 'benchmark_category' in results_df.columns and results_df['benchmark_category'].iloc[0] is not None:
             initial_benchmark = results_df['benchmark_category'].iloc[0]
             final_benchmark = results_df['benchmark_category'].iloc[-1]
-            
+
             if initial_benchmark != final_benchmark:
                 print(f"Industry Position: Moved from {initial_benchmark.replace('_', ' ').upper()} to {final_benchmark.replace('_', ' ').upper()}")
             else:
                 print(f"Industry Position: Remained at {final_benchmark.replace('_', ' ').upper()}")
-        
+
         # 5. Data-driven recommendations for further improvement
         print("\nFurther Recommendations based on Data Analysis:")
-        
+
         # NEW: Get recommendation based on current ESG score
         current_esg = results_df['esg_score'].iloc[-1]
         if hasattr(env, 'get_improvement_factors'):
@@ -4010,35 +4010,35 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
             if improvement_factors:
                 best_range = max(improvement_factors.items(), key=lambda x: x[1])
                 best_min, best_max = best_range[0]
-                
+
                 if current_esg < best_min:
                     print(f"- Focus on reaching the high-improvement ESG range ({best_min}-{best_max})")
                 elif current_esg > best_max:
                     print(f"- Consider more ambitious ESG targets as you've surpassed the highest-improvement range")
                 else:
                     print(f"- Current ESG score is in the optimal improvement range ({best_min}-{best_max})")
-        
+
         # Identify areas that still need work
         final_state = {
             'env': results_df['env_score'].iloc[-1],
             'social': results_df['social_score'].iloc[-1],
             'governance': results_df['gov_score'].iloc[-1]
         }
-        
+
         weakest_final = min(final_state.items(), key=lambda x: x[1])
-        
+
         print(f"- Focus next on {weakest_final[0].upper()} pillar (current score: {weakest_final[1]:.2f})")
-        
+
         # Recommend specific actions based on what wasn't used
         if hasattr(env, 'actions'):
             used_actions = set(results_df['action'].tolist()[1:])  # Skip initial state
             unused_actions = []
-            
+
             for i, action in env.actions.items():
                 if i != 0 and action['name'] not in used_actions:
                     if action.get('pillar', '') == weakest_final[0]:
                         unused_actions.append((i, action['name'], action.get('initiative_type', '')))
-            
+
             if unused_actions:
                 # NEW: Check financial impacts to recommend most financially advantageous actions
                 if hasattr(env, 'get_financial_impacts'):
@@ -4050,7 +4050,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
                             if initiative in financial_impacts:
                                 impact = financial_impacts[initiative].get('immediate', -0.05)
                                 financial_sorted.append((i, name, initiative, impact))
-                        
+
                         if financial_sorted:
                             # Sort by least negative/most positive financial impact
                             financial_sorted.sort(key=lambda x: x[3], reverse=True)
@@ -4070,7 +4070,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
                     print("- Consider these unused actions for this pillar:")
                     for i, name, _ in unused_actions[:3]:  # Show top 3
                         print(f"  • {name}")
-        
+
         # Compare with similar companies if available
         if hasattr(env, 'get_similar_companies'):
             similar_companies = env.get_similar_companies()
@@ -4078,7 +4078,7 @@ def visualize_esg_strategy(env, agent, num_episodes=1, save_dir='.'):
                 print("\nLearn from similar companies:")
                 for company in similar_companies[:2]:  # Show top 2
                     print(f"- {company}")
-    
+
     return results
 
 
@@ -4089,27 +4089,27 @@ def run_data_driven_esg_optimization(data, company_idx=0, max_steps=8):
     results_dir = './esg_results'
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
-    
+
     # Create the environment
     env = DataDrivenESGEnvironment(
-        data, 
-        company_idx=company_idx, 
+        data,
+        company_idx=company_idx,
         max_steps=max_steps,
         scale_factor=0.1  # Only applied to scores > 10
     )
-    
+
     # Display company information and insights
     company = env.company
     print(f"Analyzing company: {company}")
     print("\nInitial ESG Profile:")
     env.render()
-    
+
     # Show data-driven insights
     insights = env.get_company_insights()
     print("\nData-Driven ESG Insights:")
     for insight in insights:
         print(f"- {insight}")
-    
+
     # NEW: Show data-driven improvement patterns
     if hasattr(env, 'get_improvement_factors'):
         improvement_factors = env.get_improvement_factors()
@@ -4118,23 +4118,23 @@ def run_data_driven_esg_optimization(data, company_idx=0, max_steps=8):
             sorted_factors = sorted(improvement_factors.items(), key=lambda x: x[1], reverse=True)
             for (low, high), factor in sorted_factors:
                 print(f"- ESG Score Range {low}-{high}: Improvement factor {factor:.2f}x")
-    
+
     # NEW: Show pillar balance recommendation
     if hasattr(env, 'get_pillar_balance_recommendation'):
         balance_rec = env.get_pillar_balance_recommendation()
         print(f"\nData-Driven Strategy Recommendation: {balance_rec['recommendation'].upper()} approach")
         print(f"- Balance Advantage: {balance_rec['balance_advantage']:.3f}")
         print(f"- Optimal Balance Weight: {balance_rec['optimal_weight']:.2f}")
-    
+
     # Train the agent
     print("\nTraining ESG Optimization Agent...")
     scores, agent, pillar_improvements = data_driven_training(
-        env, 
+        env,
         n_episodes=300,
         checkpoint_dir=f'{results_dir}/checkpoints',
         curriculum_learning=True
     )
-    
+
     # Visualize training progress
     plt.figure(figsize=(15, 5))
     plt.plot(scores)
@@ -4143,20 +4143,20 @@ def run_data_driven_esg_optimization(data, company_idx=0, max_steps=8):
     plt.ylabel('Score')
     plt.savefig(f'{results_dir}/training_progress.png')
     plt.show()
-    
+
     # Run and visualize the optimized ESG strategy
     print("\nVisualizing Optimized ESG Strategy...")
     eval_env = DataDrivenESGEnvironment(
-        data, 
-        company_idx=company_idx, 
+        data,
+        company_idx=company_idx,
         max_steps=max_steps,
         scale_factor=0.1  # Only applied to scores > 10
     )
-    
+
     results = visualize_esg_strategy(
-        eval_env, 
-        agent, 
+        eval_env,
+        agent,
         save_dir=f'{results_dir}/visualizations'
     )
-    
+
     return results, agent, env
