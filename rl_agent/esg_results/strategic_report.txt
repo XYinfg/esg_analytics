@@ -1,0 +1,45 @@
+ESG OPTIMIZATION STRATEGIC REPORT
+Company: ACS Actividades de Construccion y Servicios SA
+
+Overall ESG Score Improvement: 0.92 points (2.63 → 3.55)
+Environmental Pillar: 0.57 points (1.11 → 1.68)
+Social Pillar: 0.10 points (4.20 → 4.30)
+Governance Pillar: 0.10 points (3.64 → 3.74)
+
+Financial Investment: $7.19
+Return on ESG Investment: 0.1279 ESG points per dollar
+
+Strategic Action Plan:
+1. Scope 2 Reduction: Enter Utility Green Tariff (100% of Consumption) (Pillar: environmental) - Improvement: 0.300, Cost: 15.00
+2. Water Conservation Program (Pillar: environmental) - Improvement: 0.300, Cost: 35.00
+3. Develop Integrated Sustainability Strategy (Pillar: all) - Improvement: 0.053, Cost: 50.00
+4. Energy Efficiency: Building Insulation Improvement (Pillar: environmental) - Improvement: 0.022, Cost: 15.00
+5. Scope 2 Reduction: Enter Utility Green Tariff (100% of Consumption) (Pillar: environmental) - Improvement: 0.033, Cost: 7.50
+6. Water Conservation Program (Pillar: environmental) - Improvement: 0.044, Cost: 17.50
+7. Scope 2 Reduction: Purchase Voluntary RECs (25% of Consumption) (Pillar: environmental) - Improvement: 0.022, Cost: 5.00
+8. Develop Integrated Sustainability Strategy (Pillar: all) - Improvement: -0.011, Cost: 25.00
+
+Final Pillar Balance Assessment: IMBALANCED (Imbalance Score: 1.127)
+
+Recommendations for Further Improvement:
+Focus on ENVIRONMENTAL pillar for next phase of improvement
+Consider these unused actions:
+- Waste Reduction Initiative (Cost: 65)
+- Supply Chain Emissions Program (Scope 3) (Cost: 85)
+- NOx Reduction: Low Excess Air (LEA) Tuning (Cost: 5)
+- NOx Reduction: Install Low-NOx Burners (LNBs) (Cost: 40)
+- NOx Reduction: Implement Staged Air Combustion (Cost: 30)
+- NOx Reduction: Implement Staged Fuel Combustion (Fuel Reburning) (Cost: 50)
+- NOx Reduction: Implement Flue Gas Recirculation (FGR) (Cost: 20)
+- NOx Reduction: Install Selective Catalytic Reduction (SCR) (Cost: 85)
+- NOx Reduction: Install Selective Non-Catalytic Reduction (SNCR) (Cost: 45)
+- NOx Reduction: Fuel Switching (e.g., to Natural Gas) (Cost: 35)
+- NOx Reduction: Water/Steam Injection (Gas Turbines/Boilers) (Cost: 40)
+- Scope 2 Reduction: Purchase Compliance RECs (25% of Consumption) (Cost: 45)
+- Scope 2 Reduction: Sign Long-Term PPA (50% of Consumption) (Cost: 70)
+- Scope 2 Reduction: Install On-site Solar PV (20% of Consumption) (Cost: 80)
+- Energy Efficiency: LED Lighting Retrofit (Cost: 20)
+- Energy Efficiency: HVAC System Upgrade (Cost: 55)
+- Energy Efficiency: Implement Energy Management System (EMS) (Cost: 40)
+- Energy Efficiency: Industrial Process Optimization (Cost: 60)
+- Pursue Green Building Certification (e.g., LEED/BREEAM) (Cost: 50)
