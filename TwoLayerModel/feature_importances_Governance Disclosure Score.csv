@@ -1,0 +1,44 @@
+Feature,Importance
+num__Size of Nomination Committee,0.3326747739305562
+num__Number of Independent Directors,0.11913943305091
+num__Nomination Committee Meeting Attendance Percentage,0.06649535135583302
+num__Nitrogen Oxide Emissions,0.06300420934882484
+num__Audit Committee Meeting Attendance Percentage,0.03406295066397346
+num__Compensation Committee Meeting Attendance %,0.03017101538960442
+num__Total Recordable Incident Rate - Employees,0.02469496668004066
+num__Number of Women on Board,0.022289258369231058
+num__Audit Committee Meetings,0.021999677310568382
+num__Number of Board Meetings for the Year,0.021841407216100416
+num__Years Auditor Employed,0.01982558514110288
+num__Age of the Oldest Director,0.019423325028705446
+num__Number of Executives / Company Managers,0.01829117340202589
+num__Age of the Youngest Director,0.018107077738621438
+num__Board Meeting Attendance Pct,0.01713495576798754
+num__Num of Independent Directors on Compensation Cmte,0.016043530066272856
+num__Pct Women in Workforce,0.014246549027580716
+num__Board Duration (Years),0.014121248427467427
+num__Number of Nomination Committee Meetings,0.013892771378662053
+num__Number of Non Executive Directors on Board,0.01226354426887759
+num__Number of Independent Directors on Audit Committee,0.01179064807553323
+num__Size of Compensation Committee,0.011786732560520938
+num__Board Size,0.011236327898005605
+num__Number of Compensation Committee Meetings,0.009805171540463101
+num__Num of Independent Directors on Nomination Cmte,0.009730459656910705
+num__Number of Employees - CSR,0.007013698920724966
+num__GHG Scope 2 Location-Based,0.006383786566356191
+num__GHG Scope 1,0.0049192451450721176
+num__Size of Audit Committee,0.004765881439313476
+num__Number of Female Executives,0.004538193548087627
+num__Total Water Withdrawal,0.003077752376477555
+num__Fatalities - Total,0.002964354428115294
+num__Fatalities - Employees,0.0027722808513067562
+num__Total Energy Consumption,0.0015397191519586702
+cat__Year_2022,0.0015214737805563526
+cat__Year_2021,0.0014375753038908447
+cat__Year_2016,0.0010693159700135913
+cat__Year_2017,0.0010297758367354048
+cat__Year_2015,0.000749942727351097
+cat__Year_2020,0.000734434188560409
+cat__Year_2019,0.0005997656753161691
+cat__Year_2023,0.00041575995793056015
+cat__Year_2018,0.0003949008378530485

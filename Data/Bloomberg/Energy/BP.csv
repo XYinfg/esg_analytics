@@ -1,0 +1,210 @@
+,,,,,,,,,,,
+BP PLC (BP/ LN) - Overview,,,,,,,,,,,
+,,,,,,,,,,,
+In Millions of USD except Per Share,,FY 2014,FY 2015,FY 2016,FY 2017,FY 2018,FY 2019,FY 2020,FY 2021,FY 2022,FY 2023
+12 Months Ending,,12/31/2014,12/31/2015,12/31/2016,12/31/2017,12/31/2018,12/31/2019,12/31/2020,12/31/2021,12/31/2022,12/31/2023
+ESG Financial Materiality Scores,,,,,,,,,,,
+BESG ESG Score,ESG_SCORE,—,5.030,5.120,5.110,5.570,5.710,6.200,6.330,6.370,—
+    Growth (YoY),ESG_SCORE,—,—,1.789,-0.195,9.002,2.513,8.581,2.097,0.632,—
+BESG Environmental Pillar Score,ENVIRONMENTAL_SCORE,—,4.830,4.670,4.750,5.490,5.880,6.800,6.910,7.090,—
+    Growth (YoY),ENVIRONMENTAL_SCORE,—,—,-3.255,1.621,15.477,7.143,15.692,1.584,2.682,—
+BESG Social Pillar Score,SOCIAL_SCORE,—,3.400,3.730,3.590,4.080,3.650,3.730,3.970,3.670,—
+    Growth (YoY),SOCIAL_SCORE,—,—,9.756,-3.571,13.600,-10.498,2.020,6.528,-7.664,—
+BESG Governance Pillar Score,GOVERNANCE_SCORE,—,7.300,7.560,7.520,7.410,7.840,8.050,8.050,8.330,—
+    Growth (YoY),GOVERNANCE_SCORE,—,—,3.524,-0.495,-1.558,5.781,2.751,0.019,3.423,—
+,,,,,,,,,,,
+ESG Disclosure Scores,,,,,,,,,,,
+ESG Disclosure Score,ESG_DISCLOSURE_SCORE,61.583,61.664,65.024,65.647,65.647,66.231,67.428,68.524,66.824,—
+    Growth (YoY),ESG_DISCLOSURE_SCORE,1.864,0.131,5.449,0.959,0.000,0.889,1.807,1.626,-2.481,—
+Environmental Disclosure Score,ENVIRON_DISCLOSURE_SCORE,42.374,45.545,45.545,58.200,58.200,59.952,68.559,70.281,65.177,—
+    Growth (YoY),ENVIRON_DISCLOSURE_SCORE,8.675,7.484,0.000,27.785,0.000,3.010,14.358,2.511,-7.263,—
+Social Disclosure Score,SOCIAL_DISCLOSURE_SCORE,52.993,54.021,58.192,47.400,47.400,47.400,47.400,48.972,48.972,—
+    Growth (YoY),SOCIAL_DISCLOSURE_SCORE,0.000,1.940,7.722,-18.545,0.000,0.000,0.000,3.316,0.000,—
+Governance Disclosure Score,GOVNCE_DISCLOSURE_SCORE,89.284,85.340,91.240,91.240,91.240,91.240,86.243,86.243,86.243,—
+    Growth (YoY),GOVNCE_DISCLOSURE_SCORE,0.000,-4.417,6.914,0.000,0.000,0.000,-5.477,0.000,0.000,—
+,,,,,,,,,,,
+Environmental,,,,,,,,,,,
+Air Quality,,,,,,,,,,,
+Nitrogen Oxide Emissions,NOX_EMISSIONS,130.000,123.000,125.000,122.000,115.000,110.000,79.000,43.000,39.000,39.000
+    Growth (YoY),NOX_EMISSIONS,0.000,-5.385,1.626,-2.400,-5.738,-4.348,-28.182,-45.570,-9.302,0.000
+VOC Emissions,VOC_EMISSIONS,—,204.000,211.000,196.000,159.000,67.000,56.000,42.000,39.000,38.000
+    Growth (YoY),VOC_EMISSIONS,—,—,3.431,-7.109,-18.878,-57.862,-16.418,-25.000,-7.143,-2.564
+Sulphur Dioxide / Sulphur Oxide Emissions,SULPHUR_DIOXIDE_SULPHUR_OXIDE_EM,39.000,36.000,36.000,35.000,32.000,23.000,19.000,10.000,10.000,10.000
+    Growth (YoY),SULPHUR_DIOXIDE_SULPHUR_OXIDE_EM,-4.878,-7.692,0.000,-2.778,-8.571,-28.125,-17.391,-47.368,0.000,0.000
+,,,,,,,,,,,
+Climate Change,,,,,,,,,,,
+Emissions Reduction Initiatives,EMISSION_REDUCTION,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Transition Plan Claim,TRANSITION_PLAN_INDICATOR,n/a,n/a,n/a,n/a,n/a,n/a,n/a,Yes,Yes,Yes
+Climate Change Policy,CLIMATE_CHG_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Climate Change Opportunities Discussed,CLIMATE_CHG_OPPORTUNITIES,No,No,No,No,No,Yes,Yes,Yes,Yes,Yes
+Risks of Climate Change Discussed,CLIMATE_RISKS,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+CO2 Scope 1,CO2_SCOPE_1,"45,500.000","44,980.000","46,060.000","47,800.000","46,400.000","46,800.000","39,800.000","32,000.000","29,700.000","30,200.000"
+    Growth (YoY),CO2_SCOPE_1,-1.087,-1.143,2.401,3.778,-2.929,0.862,-14.957,-19.598,-7.188,1.684
+CO2 Scope 2 Location-Based,CO2_SCOPE_2_LOCATION_BASED,"6,600.000",—,—,—,—,—,—,—,—,—
+    Growth (YoY),CO2_SCOPE_2_LOCATION_BASED,0.000,—,—,—,—,—,—,—,—,—
+GHG Scope 1,GHG_SCOPE_1,"48,600.000","48,910.000","50,100.000","50,500.000","48,800.000","49,200.000","41,700.000","33,200.000","30,400.000","31,100.000"
+    Growth (YoY),GHG_SCOPE_1,-1.220,0.638,2.433,0.798,-3.366,0.820,-15.244,-20.384,-8.434,2.303
+GHG Scope 2 Location-Based,GHG_SCOPE_2_LOCATION_BASED,"6,600.000","6,910.000","6,210.000","6,100.000","5,400.000","5,200.000","3,800.000","2,400.000","2,100.000","2,000.000"
+    Growth (YoY),GHG_SCOPE_2_LOCATION_BASED,0.000,4.697,-10.130,-1.771,-11.475,-3.704,-26.923,-36.842,-12.500,-4.762
+GHG Scope 2 Market-Based,GHG_SCOPE_2_MARKET_BASED,—,—,—,—,—,"5,200.000","3,800.000","2,400.000","1,400.000","1,000.000"
+    Growth (YoY),GHG_SCOPE_2_MARKET_BASED,—,—,—,—,—,—,-26.923,-36.842,-41.667,-28.571
+GHG Scope 3,GHG_SCOPE_3,"406,000.000","402,000.000","395,000.000","412,000.000","437,000.000","360,600.000","327,600.000","303,600.000","306,700.000",—
+    Growth (YoY),GHG_SCOPE_3,-3.791,-0.985,-1.741,4.304,6.068,-17.483,-9.151,-7.326,1.021,—
+Scope of Disclosure,SCOPE_OF_DISCLOSURE,3.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,—
+    Growth (YoY),SCOPE_OF_DISCLOSURE,0.000,-66.667,0.000,0.000,0.000,0.000,0.000,0.000,0.000,—
+,,,,,,,,,,,
+Energy,,,,,,,,,,,
+Energy Efficiency Policy,ENERGY_EFFIC_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Total Energy Consumption,ENERGY_CONSUMPTION,"221,944.000","188,520.000","210,833.000","206,111.000","209,722.000","211,111.000","180,004.000","128,805.000","121,780.000","124,770.000"
+    Growth (YoY),ENERGY_CONSUMPTION,-2.561,-15.060,11.836,-2.240,1.752,0.662,-14.735,-28.443,-5.454,2.455
+Renewable Energy Use,RENEW_ENERGY_USE,—,—,—,—,—,—,480.000,"1,170.000","2,340.000",—
+    Growth (YoY),RENEW_ENERGY_USE,—,—,—,—,—,—,—,143.750,100.000,—
+Electricity Used,ELECTRICITY_USED,—,—,—,—,—,—,"13,480.000","10,130.000","9,490.000",—
+    Growth (YoY),ELECTRICITY_USED,—,—,—,—,—,—,—,-24.852,-6.318,—
+Self Generated Renewable Electricity,SELF_GEN_RENEWABLE_ELECTRICITY,—,—,—,—,—,—,450.000,520.000,80.000,—
+    Growth (YoY),SELF_GEN_RENEWABLE_ELECTRICITY,—,—,—,—,—,—,—,15.556,-84.615,—
+Fuel Used - Coal/Lignite,COAL_USED,—,—,—,—,—,—,—,"1,252.680",—,—
+Fuel Used - Natural Gas,NAT_GAS_USED,—,"1,637,550.000","1,963,450.000",—,—,—,"15,356,700.000","10,622,500.000","9,916,550.000",—
+    Growth (YoY),NAT_GAS_USED,—,—,19.902,—,—,—,—,-30.828,-6.646,—
+Fuel Used - Crude Oil/Diesel,OIL_DIESEL_USED,—,—,—,—,—,—,504.318,413.023,"1,330.140",—
+    Growth (YoY),OIL_DIESEL_USED,—,—,—,—,—,—,—,-18.103,222.050,—
+,,,,,,,,,,,
+Materials & Waste,,,,,,,,,,,
+Waste Reduction Policy,WASTE_REDUCTION,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Hazardous Waste,HAZARDOUS_WASTE,165.000,157.000,228.000,171.020,182.800,142.600,133.700,156.500,153.600,177.000
+    Growth (YoY),HAZARDOUS_WASTE,-13.613,-4.848,45.223,-24.991,6.888,-21.991,-6.241,17.053,-1.853,15.234
+Total Waste,TOTAL_WASTE,528.000,423.000,470.000,457.500,424.210,633.700,540.000,526.600,546.800,494.600
+    Growth (YoY),TOTAL_WASTE,4.142,-19.886,11.111,-2.660,-7.277,49.384,-14.786,-2.481,3.836,-9.546
+Waste Recycled,WASTE_RECYCLED,116.000,117.000,130.000,136.000,112.720,262.800,256.300,253.600,242.100,252.600
+    Growth (YoY),WASTE_RECYCLED,2.655,0.862,11.111,4.615,-17.118,133.144,-2.473,-1.053,-4.535,4.337
+,,,,,,,,,,,
+Supply Chain,,,,,,,,,,,
+Environmental Supply Chain Management,ENVIRON_SUPPLY_MGT,No,No,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+,,,,,,,,,,,
+Water,,,,,,,,,,,
+Water Policy,WATER_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Total Water Withdrawal,TOTAL_WATER_WITHDRAWAL,"280,050.000","291,000.000","256,500.000","276,000.000","271,000.000","281,000.000","275,600.000","239,400.000","221,000.000","173,600.000"
+    Growth (YoY),TOTAL_WATER_WITHDRAWAL,-3.057,3.910,-11.856,7.602,-1.812,3.690,-1.922,-13.135,-7.686,-21.448
+Total Water Discharged,TOTAL_WATER_DISCHARGED,"82,880.000","87,000.000","75,000.000","80,000.000","78,000.000","78,000.000","76,000.000","59,000.000","55,000.000","51,000.000"
+    Growth (YoY),TOTAL_WATER_DISCHARGED,-3.963,4.971,-13.793,6.667,-2.500,0.000,-2.564,-22.368,-6.780,-7.273
+Water Consumption,WATER_CONSMPTN,"93,000.000","91,700.000","84,500.000","88,300.000","85,900.000","90,800.000","75,400.000","53,600.000","51,700.000","47,400.000"
+    Growth (YoY),WATER_CONSMPTN,-12.264,-1.398,-7.852,4.497,-2.718,5.704,-16.960,-28.912,-3.545,-8.317
+Water per Unit of Production,WATER_PER_UNIT_OF_PROD,419.321,430.654,407.988,430.654,407.988,339.990,339.990,226.660,"1,133.300",906.640
+    Growth (YoY),WATER_PER_UNIT_OF_PROD,—,2.703,-5.263,5.556,-5.263,-16.667,0.000,-33.333,400.000,-20.000
+,,,,,,,,,,,
+Ecological & Biodiversity Impacts,,,,,,,,,,,
+Biodiversity Policy,BIODIVERSITY_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Adopts TNFD Recommendations,ADOPT_TNFD_RECOMMENDATIONS,n/a,n/a,n/a,n/a,n/a,n/a,n/a,Yes,Yes,Yes
+Zero Deforestation Policy,ZERO_DEFORESTATION_POLICY,n/a,n/a,n/a,n/a,n/a,n/a,n/a,No,No,n/a
+Board Level Oversight of Biodiversity,BOARD_LEVEL_OVERSIGHT_BIODIV,n/a,n/a,n/a,n/a,n/a,n/a,n/a,Yes,Yes,n/a
+Executive Level Oversight of Biodiversity,EXEC_LEVEL_OVERSIGHT_BIODIV,n/a,n/a,n/a,n/a,n/a,n/a,n/a,Yes,Yes,n/a
+,,,,,,,,,,,
+Social,,,,,,,,,,,
+Community & Customers,,,,,,,,,,,
+Human Rights Policy,HUMAN_RIGHTS_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Policy Against Child Labor,POLICY_AGAINST_CHILD_LABOR,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Quality Assurance and Recall Policy,QUALITY_ASSURANCE_AND_RECALL_POL,n/a,No,No,No,No,No,No,No,No,No
+Consumer Data Protection Policy,CONSUMER_DATA_PROTECTION_POLICY,n/a,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Community Spending,COMMUNITY_SPENDING,85.000,67.200,61.100,89.500,114.200,83.800,79.600,47.900,86.600,108.700
+    Growth (YoY),COMMUNITY_SPENDING,-18.112,-20.941,-9.077,46.481,27.598,-26.620,-5.012,-39.824,80.793,25.520
+,,,,,,,,,,,
+Diversity,,,,,,,,,,,
+Equal Opportunity Policy,EQUAL_OPPORTUNITY_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Gender Pay Gap Breakout,GENDER_PAY_GAP_BREAKOUT,No,No,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Pct Women in Senior Management,PCT_WOMEN_SENIOR_MGT,18.000,19.000,22.000,21.000,24.000,25.000,27.000,29.000,33.000,34.000
+    Growth (YoY),PCT_WOMEN_SENIOR_MGT,0.000,5.556,15.789,-4.545,14.286,4.167,8.000,7.407,13.793,3.030
+Pct Women in Middle and or Other Management,PCT_WOMEN_IN_MID_AND_OTHER_MGMT,27.000,28.000,29.000,30.000,31.000,31.000,33.000,36.000,55.000,34.000
+    Growth (YoY),PCT_WOMEN_IN_MID_AND_OTHER_MGMT,0.000,3.704,3.571,3.448,3.333,0.000,6.452,9.091,52.778,-38.182
+Pct Women in Workforce,PCT_WOMEN_EMPLOYEES,31.000,32.000,33.000,34.000,35.000,38.000,39.000,39.000,39.000,41.000
+    Growth (YoY),PCT_WOMEN_EMPLOYEES,3.333,3.226,3.125,3.030,2.941,8.571,2.632,0.000,0.000,5.128
+Pct Minorities in Management,PCT_MINORITY_MGT,9.000,10.000,11.000,11.000,11.000,14.000,18.000,17.000,18.000,23.000
+    Growth (YoY),PCT_MINORITY_MGT,12.500,11.111,10.000,0.000,0.000,27.273,28.571,-5.556,5.882,27.778
+80%+ Workforce Gender Pay Gap Waterfall,GENDER_PAY_GAP_WATERFALL,—,—,—,—,—,—,—,19.000,14.900,—
+    Growth (YoY),GENDER_PAY_GAP_WATERFALL,—,—,—,—,—,—,—,—,-21.579,—
+,,,,,,,,,,,
+Ethics & Compliance,,,,,,,,,,,
+Business Ethics Policy,ETHICS_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Anti-Bribery Ethics Policy,ANTI_BRIBERY_ETHICS_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Political Donations,POLITICAL_DONATIONS,0.000,0.000,0.000,—,—,—,—,—,—,—
+,,,,,,,,,,,
+Health & Safety,,,,,,,,,,,
+Health and Safety Policy,HEALTH_SAFETY_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Fatalities - Employees,FATALITIES_EMPLOYEES,0.000,0.000,0.000,1.000,0.000,1.000,1.000,0.000,2.000,0.000
+Fatalities - Contractors,FATALITIES_CONTRACTORS,3.000,1.000,3.000,0.000,1.000,1.000,0.000,1.000,2.000,1.000
+Fatalities - Total,FATALITIES_TOTAL,3.000,1.000,3.000,1.000,1.000,2.000,1.000,1.000,4.000,1.000
+Lost Time Incident Rate - Employees,LOST_TIME_INCIDENT_RATE,0.091,0.063,0.050,0.056,0.046,0.042,0.031,0.035,0.082,—
+    Growth (YoY),LOST_TIME_INCIDENT_RATE,22.973,-30.769,-20.635,12.000,-17.857,-8.696,-26.190,12.903,134.286,—
+Lost Time Incident Rate - Contractors,LOST_TIME_INCIDENT_RT_CNTRCTR,0.072,0.059,0.052,0.054,0.049,0.050,0.054,0.064,0.058,—
+    Growth (YoY),LOST_TIME_INCIDENT_RT_CNTRCTR,9.091,-18.056,-11.864,3.846,-9.259,2.041,8.000,18.519,-9.375,—
+Lost Time Incident Rate - Workforce,LOST_TM_INCIDENT_RT_WORKFORCE,0.081,0.061,0.051,0.055,0.048,0.047,0.044,0.051,0.068,—
+    Growth (YoY),LOST_TM_INCIDENT_RT_WORKFORCE,15.714,-24.691,-16.393,7.843,-12.727,-2.083,-6.383,15.909,33.333,—
+Total Recordable Incident Rate - Employees,TOTAL_RECORDABLE_INCIDENT_RATE,0.270,0.200,0.190,0.200,0.150,0.128,0.094,0.117,0.173,0.270
+    Growth (YoY),TOTAL_RECORDABLE_INCIDENT_RATE,8.000,-25.926,-5.000,5.263,-25.000,-14.667,-26.563,24.468,47.863,56.069
+Total Recordable Incident Rate - Contractors,TOT_RECORDABLE_INCID_RT_CNTRCTR,0.340,0.280,0.220,0.230,0.230,0.193,0.163,0.204,0.196,0.278
+    Growth (YoY),TOT_RECORDABLE_INCID_RT_CNTRCTR,-5.556,-17.647,-21.429,4.545,0.000,-16.087,-15.544,25.153,-3.922,41.837
+Total Recordable Incident Rate - Workforce,TOT_RECRDBL_INCID_RT_WORKFORCE,0.310,0.240,0.210,0.218,0.198,0.166,0.132,0.164,0.187,0.274
+    Growth (YoY),TOT_RECRDBL_INCID_RT_WORKFORCE,0.000,-22.581,-12.500,3.810,-9.174,-16.162,-20.482,24.242,14.024,46.524
+,,,,,,,,,,,
+Human Capital,,,,,,,,,,,
+Training Policy,TRAINING_POLICY,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Fair Remuneration Policy,FAIR_REMUNERATION_POLICY,No,No,No,No,No,No,No,No,No,No
+Number of Employees - CSR,NUMBER_EMPLOYEES_CSR,"84,500.000","82,600.000","74,500.000","74,000.000","73,000.000","70,100.000","63,600.000","65,900.000","67,600.000","87,800.000"
+Employee Turnover Pct,EMPLOYEE_TURNOVER_PCT,12.000,16.000,16.000,12.000,12.000,18.000,20.000,24.000,24.000,23.000
+    Growth (YoY),EMPLOYEE_TURNOVER_PCT,-20.000,33.333,0.000,-25.000,0.000,50.000,11.111,20.000,0.000,-4.167
+Company Discloses Employee Engagement Score,COMP_DISCLOSES_EMP_ENG_SCORE,n/a,No,No,No,No,No,No,Yes,Yes,Yes
+,,,,,,,,,,,
+Supply Chain,,,,,,,,,,,
+Social Supply Chain Management,SOCIAL_SUPPLY_CHAIN_MGMT,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+,,,,,,,,,,,
+Governance,,,,,,,,,,,
+Audit Risk & Oversight,,,,,,,,,,,
+Years Auditor Employed,YEARS_AUDITOR_EMPLOYED,106.000,107.000,108.000,109.000,1.000,2.000,3.000,4.000,5.000,6.000
+    Growth (YoY),YEARS_AUDITOR_EMPLOYED,0.952,0.943,0.935,0.926,-99.083,100.000,50.000,33.333,25.000,20.000
+Size of Audit Committee,SIZE_OF_AUDIT_COMMITTEE,4.000,5.000,4.000,3.000,4.000,4.000,4.000,4.000,4.000,5.000
+Number of Independent Directors on Audit Committee,NUM_IND_DIR_ON_AUD_CMTE,4.000,5.000,4.000,3.000,4.000,4.000,4.000,4.000,4.000,5.000
+Audit Committee Meetings,AUDIT_COMMITTEE_MEETINGS,13.000,11.000,14.000,13.000,9.000,8.000,10.000,9.000,10.000,9.000
+Audit Committee Meeting Attendance Percentage,AUDIT_COMMITTEE_MTG_ATTEND_PCT,94.200,94.540,100.000,100.000,90.620,96.870,97.670,97.220,97.500,97.720
+    Growth (YoY),AUDIT_COMMITTEE_MTG_ATTEND_PCT,-3.789,0.361,5.775,0.000,-9.380,6.897,0.826,-0.461,0.288,0.226
+,,,,,,,,,,,
+Board Composition,,,,,,,,,,,
+Company Conducts Board Evaluations,COMPANY_CONDUCTS_BRD_EVALUATIONS,n/a,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Board Size,BOARD_SIZE,14.000,15.000,14.000,13.000,14.000,12.000,12.000,10.000,11.000,12.000
+Number of Executives / Company Managers,NUM_EXECUTIVES_COMP_MANAGERS,9.000,11.000,10.000,10.000,13.000,13.000,12.000,9.000,11.000,10.000
+Number of Non Executive Directors on Board,NUM_OF_NONEXEC_DIR_ON_BRD,12.000,13.000,12.000,11.000,12.000,10.000,10.000,8.000,9.000,11.000
+Number of Board Meetings for the Year,BOARD_MEETINGS_PER_YR,10.000,13.000,11.000,11.000,9.000,9.000,10.000,11.000,10.000,13.000
+Board Meeting Attendance Pct,BOARD_MEETING_ATTENDANCE_PCT,95.800,96.410,98.000,97.970,94.400,99.120,96.550,98.330,99.030,93.950
+    Growth (YoY),BOARD_MEETING_ATTENDANCE_PCT,-0.695,0.637,1.649,-0.031,-3.644,5.000,-2.593,1.844,0.712,-5.130
+,,,,,,,,,,,
+Compensation,,,,,,,,,,,
+Company Has Executive Share Ownership Guidelines,COMP_HAS_EXEC_SH_OWNER_GUIDELNS,n/a,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Director Share Ownership Guidelines,DIRECTOR_SH_OWNERSHIP_GUIDELINES,n/a,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Size of Compensation Committee,SIZE_OF_COMPENSATION_COMMITTEE,4.000,5.000,4.000,5.000,4.000,6.000,4.000,4.000,4.000,5.000
+Num of Independent Directors on Compensation Cmte,NUM_IND_DIR_ON_CMPNSTN_CMTE,4.000,5.000,4.000,5.000,4.000,6.000,4.000,4.000,4.000,5.000
+Number of Compensation Committee Meetings,NUM_COMPENSATION_CMTE_MTG,5.000,5.000,11.000,8.000,7.000,9.000,9.000,6.000,8.000,8.000
+Compensation Committee Meeting Attendance %,COMPENSATION_CMTE_MTG_ATTEND_PCT,100.000,—,97.720,97.050,93.540,93.180,88.890,100.000,100.000,97.500
+    Growth (YoY),COMPENSATION_CMTE_MTG_ATTEND_PCT,0.000,—,—,-0.686,-3.617,-0.385,-4.604,12.499,0.000,-2.500
+,,,,,,,,,,,
+Diversity,,,,,,,,,,,
+Number of Female Executives,NUMBER_OF_FEMALE_EXECUTIVES,1.000,1.000,0.000,0.000,2.000,2.000,4.000,4.000,6.000,7.000
+Number of Women on Board,NUMBER_OF_WOMEN_ON_BOARD,2.000,3.000,3.000,3.000,5.000,5.000,5.000,4.000,5.000,6.000
+Age of the Youngest Director,AGE_OF_YOUNGEST_DIRECTOR,53.000,55.000,55.000,56.000,56.000,57.000,—,—,—,—
+Age of the Oldest Director,AGE_OF_OLDEST_DIRECTOR,72.000,71.000,72.000,73.000,74.000,70.000,—,—,—,—
+,,,,,,,,,,,
+Independence,,,,,,,,,,,
+Number of Independent Directors,INDEPENDENT_DIRECTORS,11.000,12.000,11.000,10.000,11.000,9.000,9.000,7.000,8.000,10.000
+,,,,,,,,,,,
+Nominations & Governance Oversight,,,,,,,,,,,
+Size of Nomination Committee,SIZE_OF_NOMINATION_COMMITTEE,6.000,7.000,6.000,5.000,7.000,6.000,4.000,4.000,3.000,4.000
+Num of Independent Directors on Nomination Cmte,NUM_IND_DIR_ON_NOM_CMTE,5.000,6.000,5.000,4.000,6.000,5.000,3.000,3.000,2.000,3.000
+Number of Nomination Committee Meetings,NUM_OF_NOMINATION_CMTE_MTG,6.000,7.000,5.000,3.000,3.000,6.000,7.000,4.000,6.000,5.000
+Nomination Committee Meeting Attendance Percentage,NOMINATION_CMTE_MTG_ATTEND_PCT,100.000,—,100.000,100.000,90.000,100.000,97.370,100.000,100.000,95.000
+    Growth (YoY),NOMINATION_CMTE_MTG_ATTEND_PCT,9.087,—,—,0.000,-10.000,11.111,-2.630,2.701,0.000,-5.000
+,,,,,,,,,,,
+Sustainability Governance,,,,,,,,,,,
+Verification Type,VERIFICATION_TYPE,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+Employee CSR Training,EMPLOYEE_CSR_TRAINING,No,No,No,No,No,No,No,No,No,No
+,,,,,,,,,,,
+Tenure,,,,,,,,,,,
+Board Duration (Years),BOARD_DURATION,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000,1.000
+,,,,,,,,,,,
+Source: Bloomberg,,Right click to show data transparency (not supported for all values),,,,,,,,,

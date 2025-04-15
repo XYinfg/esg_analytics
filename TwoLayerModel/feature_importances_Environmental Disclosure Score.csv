@@ -1,0 +1,44 @@
+Feature,Importance
+num__Nitrogen Oxide Emissions,0.33530135599419836
+num__Number of Employees - CSR,0.07602369634670432
+num__GHG Scope 2 Location-Based,0.06103211550691705
+num__Number of Women on Board,0.04357326362308462
+num__Pct Women in Workforce,0.0411635049217752
+num__Number of Board Meetings for the Year,0.03953755241597058
+num__Number of Non Executive Directors on Board,0.039501750966043456
+num__Number of Executives / Company Managers,0.03874709536543211
+num__Total Recordable Incident Rate - Employees,0.034250485830545796
+num__Board Size,0.03409398010610078
+num__GHG Scope 1,0.027224956070175586
+num__Years Auditor Employed,0.026072575611591972
+num__Age of the Oldest Director,0.018011999845501298
+num__Age of the Youngest Director,0.01697031563591018
+num__Audit Committee Meetings,0.015264110342447049
+num__Board Meeting Attendance Pct,0.014723599651320893
+num__Number of Female Executives,0.013216096913750825
+num__Fatalities - Total,0.01135682065852703
+num__Number of Nomination Committee Meetings,0.010722416070209687
+num__Number of Independent Directors,0.009537386703242624
+num__Audit Committee Meeting Attendance Percentage,0.009377310937494457
+num__Size of Compensation Committee,0.009075830362486452
+num__Number of Compensation Committee Meetings,0.008954674052372947
+num__Total Water Withdrawal,0.006701916587168778
+num__Board Duration (Years),0.006664108891284871
+num__Num of Independent Directors on Compensation Cmte,0.0054728265121747
+num__Size of Nomination Committee,0.005359048771661791
+num__Nomination Committee Meeting Attendance Percentage,0.005258177162046133
+num__Fatalities - Employees,0.00487747281072922
+num__Compensation Committee Meeting Attendance %,0.004481654666872983
+num__Size of Audit Committee,0.00445269395936755
+num__Number of Independent Directors on Audit Committee,0.004020924172199418
+num__Num of Independent Directors on Nomination Cmte,0.003935012012204492
+cat__Year_2022,0.002759691487675378
+cat__Year_2015,0.0022697580748126237
+cat__Year_2019,0.0019687443592434767
+num__Total Energy Consumption,0.0017916334793127457
+cat__Year_2016,0.0017326014327579164
+cat__Year_2018,0.0013611925510819763
+cat__Year_2020,0.0009052183142056959
+cat__Year_2017,0.0007699806458447007
+cat__Year_2021,0.0007595564376640699
+cat__Year_2023,0.0007248937398880678

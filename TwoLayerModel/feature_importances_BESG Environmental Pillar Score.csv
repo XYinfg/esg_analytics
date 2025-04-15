@@ -1,0 +1,44 @@
+Feature,Importance
+num__Nitrogen Oxide Emissions,0.2108872462075955
+num__Board Size,0.08751282255057242
+num__GHG Scope 2 Location-Based,0.07150661809599758
+num__Total Recordable Incident Rate - Employees,0.05898465918838022
+num__Number of Women on Board,0.05747294883416883
+num__Years Auditor Employed,0.04366172300613081
+num__Pct Women in Workforce,0.042271373113741004
+num__Fatalities - Employees,0.035336530538931245
+num__Number of Executives / Company Managers,0.03241223703690268
+num__Number of Female Executives,0.026528027968774483
+num__Number of Independent Directors,0.02526409613152533
+num__Number of Board Meetings for the Year,0.02233562323922126
+num__Age of the Youngest Director,0.02107861146803909
+num__Board Meeting Attendance Pct,0.020737865307947
+num__Number of Non Executive Directors on Board,0.01976872388368518
+num__Age of the Oldest Director,0.01972175395518886
+num__Number of Employees - CSR,0.018904254932463296
+num__Fatalities - Total,0.018318823774997935
+num__GHG Scope 1,0.01757367075826756
+num__Audit Committee Meetings,0.01748730379426755
+num__Number of Nomination Committee Meetings,0.01416979672379893
+num__Num of Independent Directors on Nomination Cmte,0.013659560691184035
+num__Number of Compensation Committee Meetings,0.01007096108967807
+num__Audit Committee Meeting Attendance Percentage,0.009522272621377087
+num__Total Water Withdrawal,0.007804211024594482
+num__Compensation Committee Meeting Attendance %,0.007440542934680021
+num__Nomination Committee Meeting Attendance Percentage,0.006822291438417587
+num__Board Duration (Years),0.006545250428377799
+num__Number of Independent Directors on Audit Committee,0.006317674960260195
+num__Num of Independent Directors on Compensation Cmte,0.00615436493271853
+num__Size of Audit Committee,0.005878316782414633
+num__Size of Nomination Committee,0.00528231658903322
+cat__Year_2015,0.00469743680460227
+num__Total Energy Consumption,0.004336173425787869
+cat__Year_2022,0.004085875877256203
+num__Size of Compensation Committee,0.003909462280006282
+cat__Year_2016,0.003809453958897688
+cat__Year_2020,0.003615215234242031
+cat__Year_2021,0.0021550883484405745
+cat__Year_2017,0.0018189052860299055
+cat__Year_2019,0.0017186898179814942
+cat__Year_2018,0.0012194764810636676
+cat__Year_2023,0.0012017484823597195
