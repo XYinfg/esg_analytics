@@ -6,19 +6,17 @@ This repository contains two advanced models for ESG (Environmental, Social, and
 
 Both models are designed to help companies understand, predict, and improve their ESG performance using state-of-the-art machine learning techniques.
 
-## Model 1: ESG TabTransformer Prediction Model
+## Model 1: Two Layer Model
 
 ### Overview
 
-The TabTransformer prediction model is designed to accurately estimate ESG scores for energy companies based on various environmental, social, and governance metrics. It uses a transformer-based architecture specifically adapted for tabular data.
+The Two Layer Model prediction model is designed to accurately estimate ESG scores for energy companies based on various environmental, social, and governance metrics.
 
 ### Core Components
 
-#### TabTransformer Architecture
-- **Tabular Embedding**: Converts categorical features into dense vector representations
-- **Multi-Head Attention**: Implements transformer-style attention mechanisms for feature interactions
-- **Transformer Blocks**: Processes feature embeddings through multiple transformer layers
-- **Combined Processing**: Handles both categorical and numerical features in a unified framework
+#### Model Architecture
+- Layer 1: Random Forest Regressor - to predict Pillar scores
+- Layer 2: OLS Linear Regression - use outputs from Layer 1 to predict ESG Score
 
 #### Data Processing Pipeline
 - Comprehensive data preprocessing with robust handling of missing values
